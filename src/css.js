@@ -1,22 +1,22 @@
-import jQuery from "./core.js";
-import access from "./core/access.js";
-import nodeName from "./core/nodeName.js";
-import rcssNum from "./var/rcssNum.js";
-import isIE from "./var/isIE.js";
-import rnumnonpx from "./css/var/rnumnonpx.js";
-import cssExpand from "./css/var/cssExpand.js";
-import isAutoPx from "./css/isAutoPx.js";
-import cssCamelCase from "./css/cssCamelCase.js";
-import getStyles from "./css/var/getStyles.js";
-import swap from "./css/var/swap.js";
-import curCSS from "./css/curCSS.js";
-import adjustCSS from "./css/adjustCSS.js";
-import finalPropName from "./css/finalPropName.js";
-import support from "./css/support.js";
+import { jQuery } from "./core.js";
+import { access } from "./core/access.js";
+import { nodeName } from "./core/nodeName.js";
+import { rcssNum } from "./var/rcssNum.js";
+import { isIE } from "./var/isIE.js";
+import { rnumnonpx } from "./css/var/rnumnonpx.js";
+import { rcustomProp } from "./css/var/rcustomProp.js";
+import { cssExpand } from "./css/var/cssExpand.js";
+import { isAutoPx } from "./css/isAutoPx.js";
+import { cssCamelCase } from "./css/cssCamelCase.js";
+import { getStyles } from "./css/var/getStyles.js";
+import { swap } from "./css/var/swap.js";
+import { curCSS } from "./css/curCSS.js";
+import { adjustCSS } from "./css/adjustCSS.js";
+import { finalPropName } from "./css/finalPropName.js";
+import { support } from "./css/support.js";
 
 import "./core/init.js";
 import "./core/ready.js";
-import "./selector.js"; // contains
 
 var
 
@@ -24,7 +24,6 @@ var
 	// except "table", "table-cell", or "table-caption"
 	// See here for display values: https://developer.mozilla.org/en-US/docs/CSS/display
 	rdisplayswap = /^(none|table(?!-c[ea]).+)/,
-	rcustomProp = /^--/,
 	cssShow = { position: "absolute", visibility: "hidden", display: "block" },
 	cssNormalTransform = {
 		letterSpacing: "0",
@@ -46,7 +45,8 @@ function setPositiveNumber( _elem, value, subtract ) {
 function boxModelAdjustment( elem, dimension, box, isBorderBox, styles, computedVal ) {
 	var i = dimension === "width" ? 1 : 0,
 		extra = 0,
-		delta = 0;
+		delta = 0,
+		marginDelta = 0;
 
 	// Adjustment may not be necessary
 	if ( box === ( isBorderBox ? "border" : "content" ) ) {
@@ -56,8 +56,10 @@ function boxModelAdjustment( elem, dimension, box, isBorderBox, styles, computed
 	for ( ; i < 4; i += 2 ) {
 
 		// Both box models exclude margin
+		// Count margin delta separately to only add it after scroll gutter adjustment.
+		// This is needed to make negative margins work with `outerHeight( true )` (gh-3982).
 		if ( box === "margin" ) {
-			delta += jQuery.css( elem, box + cssExpand[ i ], true, styles );
+			marginDelta += jQuery.css( elem, box + cssExpand[ i ], true, styles );
 		}
 
 		// If we get here with a content-box, we're seeking "padding" or "border" or "margin"
@@ -108,7 +110,7 @@ function boxModelAdjustment( elem, dimension, box, isBorderBox, styles, computed
 		) ) || 0;
 	}
 
-	return delta;
+	return delta + marginDelta;
 }
 
 function getWidthOrHeight( elem, dimension, extra ) {
@@ -220,15 +222,15 @@ jQuery.extend( {
 		if ( value !== undefined ) {
 			type = typeof value;
 
-			// Convert "+=" or "-=" to relative numbers (#7345)
+			// Convert "+=" or "-=" to relative numbers (trac-7345)
 			if ( type === "string" && ( ret = rcssNum.exec( value ) ) && ret[ 1 ] ) {
 				value = adjustCSS( elem, name, ret );
 
-				// Fixes bug #9237
+				// Fixes bug trac-9237
 				type = "number";
 			}
 
-			// Make sure that null and NaN values aren't set (#7116)
+			// Make sure that null and NaN values aren't set (trac-7116)
 			if ( value == null || value !== value ) {
 				return;
 			}
@@ -239,7 +241,7 @@ jQuery.extend( {
 			}
 
 			// Support: IE <=9 - 11+
-			// background-* props of a cloned element affect the source element (#8908)
+			// background-* props of a cloned element affect the source element (trac-8908)
 			if ( isIE && value === "" && name.indexOf( "background" ) === 0 ) {
 				style[ name ] = "inherit";
 			}
@@ -415,4 +417,4 @@ jQuery.fn.extend( {
 	}
 } );
 
-export default jQuery;
+export { jQuery, jQuery as $ };

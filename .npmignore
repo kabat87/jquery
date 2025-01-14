@@ -1,13 +1,15 @@
 .eslintignore
-.eslintrc.json
+.eslintcache
+eslint.config.js
 
 /.editorconfig
 /.gitattributes
 /.mailmap
-/.travis.yml
+/.sizecache.json
 
 /build
 /external
-/speed
 /test
-/Gruntfile.js
+/tmp
+/changelog.html
+/contributors.html

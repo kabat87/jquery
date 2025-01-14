@@ -8,7 +8,7 @@ QUnit.module( "event", {
 QUnit.test( "null or undefined handler", function( assert ) {
 	assert.expect( 4 );
 
-	// Supports Fixes bug #7229
+	// Supports Fixes bug trac-7229
 	try {
 		jQuery( "#firstp" ).on( "click", null );
 		assert.ok( true, "Passing a null handler will not throw an exception" );
@@ -224,12 +224,12 @@ QUnit.test( "on(), namespace with special add", function( assert ) {
 
 	div.on( "test.a", { x: 1 }, function( e ) {
 		assert.ok( !!e.xyz, "Make sure that the data is getting passed through." );
-		assert.equal( e.data[ "x" ], 1, "Make sure data is attached properly." );
+		assert.equal( e.data.x, 1, "Make sure data is attached properly." );
 	} );
 
 	div.on( "test.b", { x: 2 }, function( e ) {
 		assert.ok( !!e.xyz, "Make sure that the data is getting passed through." );
-		assert.equal( e.data[ "x" ], 2, "Make sure data is attached properly." );
+		assert.equal( e.data.x, 2, "Make sure data is attached properly." );
 	} );
 
 	// Should trigger 5
@@ -293,14 +293,14 @@ QUnit.test( "on/one/off(Object)", function( assert ) {
 
 		// Regular bind
 		.on( {
-			"click":handler,
-			"mouseover":handler
+			"click": handler,
+			"mouseover": handler
 		} )
 
 		// Bind with data
 		.one( {
-			"click":handlerWithData,
-			"mouseover":handlerWithData
+			"click": handlerWithData,
+			"mouseover": handlerWithData
 		}, 2 );
 
 	trigger();
@@ -313,8 +313,8 @@ QUnit.test( "on/one/off(Object)", function( assert ) {
 	assert.equal( mouseoverCounter, 4, "on(Object)" );
 
 	jQuery( "#firstp" ).off( {
-		"click":handler,
-		"mouseover":handler
+		"click": handler,
+		"mouseover": handler
 	} );
 
 	trigger();
@@ -484,7 +484,7 @@ QUnit.test( "trigger() works with events that were previously stopped", function
 QUnit.test( "on(), iframes", function( assert ) {
 	assert.expect( 1 );
 
-	// events don't work with iframes, see #939 - this test fails in IE because of contentDocument
+	// events don't work with iframes, see trac-939 - this test fails in IE because of contentDocument
 	var doc = jQuery( "#loadediframe" ).contents();
 
 	jQuery( "div", doc ).on( "click", function() {
@@ -552,8 +552,10 @@ QUnit.test( "on(), namespaced events, cloned events", function( assert ) {
 		assert.equal( this.nodeType, 1, "Check node,textnode,comment on just does real nodes" );
 	} ).trigger( "tester" );
 
-	// Make sure events stick with appendTo'd elements (which are cloned) #2027
-	jQuery( "<a href='#fail' class='test'>test</a>" ).on( "click", function() { return false; } ).appendTo( "#qunit-fixture" );
+	// Make sure events stick with appendTo'd elements (which are cloned) trac-2027
+	jQuery( "<a href='#fail' class='test'>test</a>" ).on( "click", function() {
+		return false;
+	} ).appendTo( "#qunit-fixture" );
 	assert.ok( jQuery( "a.test" ).eq( 0 ).triggerHandler( "click" ) === false, "Handler is bound to appendTo'd elements" );
 } );
 
@@ -589,7 +591,7 @@ QUnit.test( "on(), multi-namespaced events", function( assert ) {
 		check( "click.test.abc", "Namespaced click triggered" );
 	} );
 
-	// Those would not trigger/off (#5303)
+	// Those would not trigger/off (trac-5303)
 	jQuery( "#firstp" ).trigger( "click.a.test" );
 	jQuery( "#firstp" ).off( "click.a.test" );
 
@@ -704,7 +706,9 @@ QUnit.test( "on(name, false), off(name, false)", function( assert ) {
 	assert.expect( 3 );
 
 	var main = 0;
-	jQuery( "#qunit-fixture" ).on( "click", function() { main++; } );
+	jQuery( "#qunit-fixture" ).on( "click", function() {
+		main++;
+	} );
 	jQuery( "#ap" ).trigger( "click" );
 	assert.equal( main, 1, "Verify that the trigger happened correctly." );
 
@@ -727,7 +731,9 @@ QUnit.test( "on(name, selector, false), off(name, selector, false)", function( a
 
 	var main = 0;
 
-	jQuery( "#qunit-fixture" ).on( "click", "#ap", function() { main++; } );
+	jQuery( "#qunit-fixture" ).on( "click", "#ap", function() {
+		main++;
+	} );
 	jQuery( "#ap" ).trigger( "click" );
 	assert.equal( main, 1, "Verify that the trigger happened correctly." );
 
@@ -766,7 +772,7 @@ QUnit.test( "on()/trigger()/off() on plain object", function( assert ) {
 
 	events = jQuery._data( obj, "events" );
 	assert.ok( events, "Object has events bound." );
-	assert.equal( obj[ "events" ], undefined, "Events object on plain objects is not events" );
+	assert.equal( obj.events, undefined, "Events object on plain objects is not events" );
 	assert.equal( obj.test, undefined, "Make sure that test event is not on the plain object." );
 	assert.equal( obj.handle, undefined, "Make sure that the event handler is not on the plain object." );
 
@@ -785,7 +791,7 @@ QUnit.test( "on()/trigger()/off() on plain object", function( assert ) {
 
 	assert.equal( obj && obj[ jQuery.expando ] &&
 			obj[ jQuery.expando ][ jQuery.expando ] &&
-			obj[ jQuery.expando ][ jQuery.expando ][ "events" ], undefined, "Make sure events object is removed" );
+			obj[ jQuery.expando ][ jQuery.expando ].events, undefined, "Make sure events object is removed" );
 } );
 
 QUnit.test( "off(type)", function( assert ) {
@@ -812,7 +818,7 @@ QUnit.test( "off(type)", function( assert ) {
 		.off( "error1 error2", error )
 		.trigger( "error1" ).triggerHandler( "error2" );
 
-	message = "unbind many"; // #3538
+	message = "unbind many"; // trac-3538
 	$elem.on( "error1 error2", error )
 		.off( "error1 error2" )
 		.trigger( "error1" ).triggerHandler( "error2" );
@@ -938,12 +944,26 @@ QUnit.test( "trigger() bubbling", function( assert ) {
 
 	var win = 0, doc = 0, html = 0, body = 0, main = 0, ap = 0;
 
-	jQuery( window ).on( "click", function() { win++; } );
-	jQuery( document ).on( "click", function( e ) { if ( e.target !== document ) { doc++; } } );
-	jQuery( "html" ).on( "click", function() { html++; } );
-	jQuery( "body" ).on( "click", function() { body++; } );
-	jQuery( "#qunit-fixture" ).on( "click", function() { main++; } );
-	jQuery( "#ap" ).on( "click", function() { ap++; return false; } );
+	jQuery( window ).on( "click", function() {
+		win++;
+	} );
+	jQuery( document ).on( "click", function( e ) {
+		if ( e.target !== document ) {
+			doc++;
+		}
+	} );
+	jQuery( "html" ).on( "click", function() {
+		html++;
+	} );
+	jQuery( "body" ).on( "click", function() {
+		body++;
+	} );
+	jQuery( "#qunit-fixture" ).on( "click", function() {
+		main++;
+	} );
+	jQuery( "#ap" ).on( "click", function() {
+		ap++; return false;
+	} );
 
 	jQuery( "html" ).trigger( "click" );
 	assert.equal( win, 1, "HTML bubble" );
@@ -1041,7 +1061,7 @@ QUnit.test( "trigger(type, [data], [fn])", function( assert ) {
 	} catch ( e ) {
 		pass = false;
 	}
-	assert.ok( pass, "Trigger on a table with a colon in the even type, see #3533" );
+	assert.ok( pass, "Trigger on a table with a colon in the even type, see trac-3533" );
 
 	form = jQuery( "<form action=''></form>" ).appendTo( "body" );
 
@@ -1069,7 +1089,7 @@ QUnit.test( "trigger(type, [data], [fn])", function( assert ) {
 	form.remove();
 } );
 
-QUnit.test( "submit event bubbles on copied forms (#11649)", function( assert ) {
+QUnit.test( "submit event bubbles on copied forms (trac-11649)", function( assert ) {
 	assert.expect( 3 );
 
 	var $formByClone, $formByHTML,
@@ -1105,7 +1125,7 @@ QUnit.test( "submit event bubbles on copied forms (#11649)", function( assert ) 
 	$testForm.off( "submit", noSubmit );
 } );
 
-QUnit.test( "change event bubbles on copied forms (#11796)", function( assert ) {
+QUnit.test( "change event bubbles on copied forms (trac-11796)", function( assert ) {
 	assert.expect( 3 );
 
 	var $formByClone, $formByHTML,
@@ -1159,7 +1179,9 @@ QUnit.test( "trigger(eventObject, [data], [fn])", function( assert ) {
 	event.stopPropagation();
 	assert.equal( event.isPropagationStopped(), true, "Verify isPropagationStopped" );
 
-	event.isPropagationStopped = function() { return false; };
+	event.isPropagationStopped = function() {
+		return false;
+	};
 	event.stopImmediatePropagation();
 	assert.equal( event.isPropagationStopped(), true, "Verify isPropagationStopped" );
 	assert.equal( event.isImmediatePropagationStopped(), true, "Verify isPropagationStopped" );
@@ -1227,7 +1249,7 @@ QUnit.test( "trigger(eventObject, [data], [fn])", function( assert ) {
 	assert.equal( event.isDefaultPrevented(), false, "default not prevented" );
 } );
 
-QUnit.test( ".trigger() bubbling on disconnected elements (#10489)", function( assert ) {
+QUnit.test( ".trigger() bubbling on disconnected elements (trac-10489)", function( assert ) {
 	assert.expect( 2 );
 
 	jQuery( window ).on( "click", function() {
@@ -1251,7 +1273,7 @@ QUnit.test( ".trigger() bubbling on disconnected elements (#10489)", function( a
 	jQuery( window ).off( "click" );
 } );
 
-QUnit.test( ".trigger() doesn't bubble load event (#10717)", function( assert ) {
+QUnit.test( ".trigger() doesn't bubble load event (trac-10717)", function( assert ) {
 	assert.expect( 1 );
 
 	jQuery( window ).on( "load", function() {
@@ -1269,7 +1291,7 @@ QUnit.test( ".trigger() doesn't bubble load event (#10717)", function( assert ) 
 	jQuery( window ).off( "load" );
 } );
 
-QUnit.test( "Delegated events in SVG (#10791; #13180)", function( assert ) {
+QUnit.test( "Delegated events in SVG (trac-10791; trac-13180)", function( assert ) {
 	assert.expect( 2 );
 
 	var useElem, e,
@@ -1295,7 +1317,7 @@ QUnit.test( "Delegated events in SVG (#10791; #13180)", function( assert ) {
 		.end();
 
 	// Fire a native click on an SVGElementInstance (the instance tree of an SVG <use>)
-	// to confirm that it doesn't break our event delegation handling (#13180)
+	// to confirm that it doesn't break our event delegation handling (trac-13180)
 	useElem = svg.find( "#use" )[ 0 ];
 	if ( document.createEvent && useElem && useElem.instanceRoot ) {
 		e = document.createEvent( "MouseEvents" );
@@ -1321,7 +1343,7 @@ QUnit.test( "Delegated events with malformed selectors (gh-3071)", function( ass
 	assert.ok( true, "malformed selector does not throw on event" );
 } );
 
-QUnit.test( "Delegated events in forms (#10844; #11145; #8165; #11382, #11764)", function( assert ) {
+QUnit.test( "Delegated events in forms (trac-10844; trac-11145; trac-8165; trac-11382, trac-11764)", function( assert ) {
 	assert.expect( 5 );
 
 	// Alias names like "id" cause havoc
@@ -1376,7 +1398,7 @@ QUnit.test( "Delegated events in forms (#10844; #11145; #8165; #11382, #11764)",
 	form.remove();
 } );
 
-QUnit.test( "Submit event can be stopped (#11049)", function( assert ) {
+QUnit.test( "Submit event can be stopped (trac-11049)", function( assert ) {
 	assert.expect( 1 );
 
 	// Since we manually bubble in IE, make sure inner handlers get a chance to cancel
@@ -1394,7 +1416,9 @@ QUnit.test( "Submit event can be stopped (#11049)", function( assert ) {
 			return false;
 		} )
 		.find( "#myform input[type=submit]" )
-			.each( function() { this.click(); } )
+			.each( function() {
+				this.click();
+			} )
 		.end()
 		.on( "submit", function() {
 			assert.ok( false, "submit bubbled on second handler" );
@@ -1424,13 +1448,22 @@ QUnit[ /(ipad|iphone|ipod)/i.test( navigator.userAgent ) ? "skip" : "test" ](
 	var done = assert.async();
 
 	window.onmessage = function( event ) {
-		var payload = JSON.parse( event.data );
+		try {
+			var payload = JSON.parse( event.data );
 
-		assert.ok( payload.event, "beforeunload", "beforeunload event" );
+			// Ignore unrelated messages
+			if ( payload.source === "jQuery onbeforeunload iframe test" ) {
+				assert.ok( payload.event, "beforeunload", "beforeunload event" );
 
-		iframe.remove();
-		window.onmessage = null;
-		done();
+				iframe.remove();
+				window.onmessage = null;
+				done();
+			}
+		} catch ( e ) {
+
+			// Messages may come from other sources, like browser extensions;
+			// some may not be valid JSONs and thus cannot be `JSON.parse`d.
+		}
 	};
 
 	iframe.appendTo( "#qunit-fixture" );
@@ -1450,7 +1483,7 @@ QUnit.test( "jQuery.Event( type, props )", function( assert ) {
 	assert.equal( event.type, "keydown", "Verify type" );
 
 	// ensure "type" in props won't clobber the one set by constructor
-	assert.equal( jQuery.inArray( "type", jQuery.event.props ), -1, "'type' property not in props (#10375)" );
+	assert.equal( jQuery.inArray( "type", jQuery.event.props ), -1, "'type' property not in props (trac-10375)" );
 
 	assert.ok( "keyCode" in event, "Special 'keyCode' property exists" );
 
@@ -1506,10 +1539,18 @@ QUnit.test( ".on()/.off()", function( assert ) {
 	var event, clicked, hash, called, livec, lived, livee,
 		submit = 0, div = 0, livea = 0, liveb = 0;
 
-	jQuery( "#body" ).on( "submit", "#qunit-fixture div", function() { submit++; return false; } );
-	jQuery( "#body" ).on( "click", "#qunit-fixture div", function() { div++; } );
-	jQuery( "#body" ).on( "click", "div#nothiddendiv", function() { livea++; } );
-	jQuery( "#body" ).on( "click", "div#nothiddendivchild", function() { liveb++; } );
+	jQuery( "#body" ).on( "submit", "#qunit-fixture div", function() {
+		submit++; return false;
+	} );
+	jQuery( "#body" ).on( "click", "#qunit-fixture div", function() {
+		div++;
+	} );
+	jQuery( "#body" ).on( "click", "div#nothiddendiv", function() {
+		livea++;
+} );
+	jQuery( "#body" ).on( "click", "div#nothiddendivchild", function() {
+		liveb++;
+	} );
 
 	// Nothing should trigger on the body
 	jQuery( "body" ).trigger( "click" );
@@ -1569,7 +1610,9 @@ QUnit.test( ".on()/.off()", function( assert ) {
 
 	// Make sure that stopPropagation doesn't stop live events
 	submit = 0; div = 0; livea = 0; liveb = 0;
-	jQuery( "#body" ).on( "click", "div#nothiddendivchild", function( e ) { liveb++; e.stopPropagation(); } );
+	jQuery( "#body" ).on( "click", "div#nothiddendivchild", function( e ) {
+		liveb++; e.stopPropagation();
+	} );
 	jQuery( "div#nothiddendivchild" ).trigger( "click" );
 	assert.equal( submit, 0, "stopPropagation Click on inner div" );
 	assert.equal( div, 1, "stopPropagation Click on inner div" );
@@ -1591,7 +1634,9 @@ QUnit.test( ".on()/.off()", function( assert ) {
 
 	// Test binding with a different context
 	clicked = 0;
-	jQuery( "#qunit-fixture" ).on( "click", "#foo", function() { clicked++; } );
+	jQuery( "#qunit-fixture" ).on( "click", "#foo", function() {
+		clicked++;
+	} );
 	jQuery( "#qunit-fixture div" ).trigger( "click" );
 	jQuery( "#foo" ).trigger( "click" );
 	jQuery( "#qunit-fixture" ).trigger( "click" );
@@ -1635,14 +1680,18 @@ QUnit.test( ".on()/.off()", function( assert ) {
 	jQuery( "#body" ).off( "click", "#foo" );
 
 	// Verify that return false prevents default action
-	jQuery( "#body" ).on( "click", "#anchor2", function() { return false; } );
+	jQuery( "#body" ).on( "click", "#anchor2", function() {
+		return false;
+	} );
 	hash = window.location.hash;
 	jQuery( "#anchor2" ).trigger( "click" );
 	assert.equal( window.location.hash, hash, "return false worked" );
 	jQuery( "#body" ).off( "click", "#anchor2" );
 
 	// Verify that .preventDefault() prevents default action
-	jQuery( "#body" ).on( "click", "#anchor2", function( e ) { e.preventDefault(); } );
+	jQuery( "#body" ).on( "click", "#anchor2", function( e ) {
+		e.preventDefault();
+	} );
 	hash = window.location.hash;
 	jQuery( "#anchor2" ).trigger( "click" );
 	assert.equal( window.location.hash, hash, "e.preventDefault() worked" );
@@ -1650,7 +1699,9 @@ QUnit.test( ".on()/.off()", function( assert ) {
 
 	// Test binding the same handler to multiple points
 	called = 0;
-	function callback() { called++; return false; }
+	function callback() {
+		called++; return false;
+	}
 
 	jQuery( "#body" ).on( "click", "#nothiddendiv", callback );
 	jQuery( "#body" ).on( "click", "#anchor2", callback );
@@ -1696,8 +1747,14 @@ QUnit.test( ".on()/.off()", function( assert ) {
 	livec = 0;
 	jQuery( "#nothiddendivchild" ).html( "<span></span>" );
 
-	jQuery( "#body" ).on( "click", "#nothiddendivchild", function() { jQuery( "#nothiddendivchild" ).html( "" ); } );
-	jQuery( "#body" ).on( "click", "#nothiddendivchild", function( e ) { if ( e.target ) {livec++;} } );
+	jQuery( "#body" ).on( "click", "#nothiddendivchild", function() {
+		jQuery( "#nothiddendivchild" ).html( "" );
+	} );
+	jQuery( "#body" ).on( "click", "#nothiddendivchild", function( e ) {
+		if ( e.target ) {
+			livec++;
+		}
+	} );
 
 	jQuery( "#nothiddendiv span" ).trigger( "click" );
 	assert.equal( jQuery( "#nothiddendiv span" ).length, 0, "Verify that first handler occurred and modified the DOM." );
@@ -1712,16 +1769,26 @@ QUnit.test( ".on()/.off()", function( assert ) {
 	livee = 0;
 
 	// bind one pair in one order
-	jQuery( "#body" ).on( "click", "span#liveSpan1 a", function() { lived++; return false; } );
-	jQuery( "#body" ).on( "click", "span#liveSpan1", function() { livee++; } );
+	jQuery( "#body" ).on( "click", "span#liveSpan1 a", function() {
+		lived++;
+		return false;
+	} );
+	jQuery( "#body" ).on( "click", "span#liveSpan1", function() {
+		livee++;
+	} );
 
 	jQuery( "span#liveSpan1 a" ).trigger( "click" );
 	assert.equal( lived, 1, "Verify that only one first handler occurred." );
 	assert.equal( livee, 0, "Verify that second handler doesn't." );
 
 	// and one pair in inverse
-	jQuery( "#body" ).on( "click", "span#liveSpan2", function() { livee++; } );
-	jQuery( "#body" ).on( "click", "span#liveSpan2 a", function() { lived++; return false; } );
+	jQuery( "#body" ).on( "click", "span#liveSpan2", function() {
+		livee++;
+	} );
+	jQuery( "#body" ).on( "click", "span#liveSpan2 a", function() {
+		lived++;
+		return false;
+	} );
 
 	lived = 0;
 	livee = 0;
@@ -1747,11 +1814,17 @@ QUnit.test( ".on()/.off()", function( assert ) {
 	// Work with deep selectors
 	livee = 0;
 
-	function clickB() { livee++; }
+	function clickB() {
+		livee++;
+	}
 
-	jQuery( "#body" ).on( "click", "#nothiddendiv div", function() { livee++; } );
+	jQuery( "#body" ).on( "click", "#nothiddendiv div", function() {
+		livee++;
+	} );
 	jQuery( "#body" ).on( "click", "#nothiddendiv div", clickB );
-	jQuery( "#body" ).on( "mouseover", "#nothiddendiv div", function() { livee++; } );
+	jQuery( "#body" ).on( "mouseover", "#nothiddendiv div", function() {
+		livee++;
+	} );
 
 	assert.equal( livee, 0, "No clicks, deep selector." );
 
@@ -1825,6 +1898,7 @@ QUnit.test( "events with type matching an Object.prototype property, cloned elem
 	elem.appendTo( "#qunit-fixture" );
 
 	try {
+
 		// Make sure the original element has some event data.
 		elem.on( "click", function() {} );
 
@@ -1844,7 +1918,7 @@ QUnit[ QUnit.jQuerySelectors ? "test" : "skip" ]( "delegated event with delegate
 	assert.expect( 3 );
 	var markup = jQuery( "<div><ul><li><a id=\"a0\"></a><ul id=\"ul0\"><li class=test><a id=\"a0_0\"></a></li><li><a id=\"a0_1\"></a></li></ul></li></ul></div>" ).appendTo( "#qunit-fixture" );
 
-	// Non-positional selector (#12383)
+	// Non-positional selector (trac-12383)
 	markup.find( "#ul0" )
 		.on( "click", "div li a", function() {
 			assert.ok( false, "div is ABOVE the delegation point!" );
@@ -1859,7 +1933,8 @@ QUnit[ QUnit.jQuerySelectors ? "test" : "skip" ]( "delegated event with delegate
 		.off( "click" );
 
 	if ( QUnit.jQuerySelectorsPos ) {
-		// Positional selector (#11315)
+
+		// Positional selector (trac-11315)
 		markup.find( "ul" ).eq( 0 )
 			.on( "click", ">li>a", function() {
 				assert.ok( this.id === "a0", "child li was clicked" );
@@ -1879,7 +1954,7 @@ QUnit[ QUnit.jQuerySelectors ? "test" : "skip" ]( "delegated event with delegate
 	markup.remove();
 } );
 
-QUnit.test( "delegated event with selector matching Object.prototype property (#13203)", function( assert ) {
+QUnit.test( "delegated event with selector matching Object.prototype property (trac-13203)", function( assert ) {
 	assert.expect( 1 );
 
 	var matched = 0;
@@ -1893,7 +1968,7 @@ QUnit.test( "delegated event with selector matching Object.prototype property (#
 	assert.equal( matched, 0, "Nothing matched 'toString'" );
 } );
 
-QUnit.test( "delegated event with intermediate DOM manipulation (#13208)", function( assert ) {
+QUnit.test( "delegated event with intermediate DOM manipulation (trac-13208)", function( assert ) {
 	assert.expect( 1 );
 
 	jQuery( "#foo" ).on( "click", "[id=sap]", function() {} );
@@ -1954,8 +2029,12 @@ QUnit.test( "off all bound delegated events", function( assert ) {
 		clicks = 0,
 		div = jQuery( "#body" );
 
-	div.on( "click submit", "div#nothiddendivchild", function() { count++; } );
-	div.on( "click", function() { clicks++; } );
+	div.on( "click submit", "div#nothiddendivchild", function() {
+		count++;
+	} );
+	div.on( "click", function() {
+		clicks++;
+	} );
 	div.off( undefined, "**" );
 
 	jQuery( "div#nothiddendivchild" ).trigger( "click" );
@@ -1974,7 +2053,9 @@ QUnit.test( "on with multiple delegated events", function( assert ) {
 	var count = 0,
 		div = jQuery( "#body" );
 
-	div.on( "click submit", "div#nothiddendivchild", function() { count++; } );
+	div.on( "click submit", "div#nothiddendivchild", function() {
+		count++;
+	} );
 
 	jQuery( "div#nothiddendivchild" ).trigger( "click" );
 	jQuery( "div#nothiddendivchild" ).trigger( "submit" );
@@ -2154,7 +2235,7 @@ QUnit.test( "window resize", function( assert ) {
 } );
 
 QUnit.test( "focusin bubbles", function( assert ) {
-	assert.expect( 2 );
+	assert.expect( 3 );
 
 	var input = jQuery( "<input type='text' />" ).prependTo( "body" ),
 		order = 0;
@@ -2170,14 +2251,13 @@ QUnit.test( "focusin bubbles", function( assert ) {
 		assert.equal( 0, order++, "focusin on the element first" );
 	} );
 
-// Removed since DOM focus is unreliable on test swarm
 	// DOM focus method
-//	input[0].focus();
+	input[ 0 ].focus();
 
 	// To make the next focus test work, we need to take focus off the input.
 	// This will fire another focusin event, so set order to reflect that.
-//	order = 1;
-//	jQuery("#text1")[0].focus();
+	order = 1;
+	jQuery( "#text1" )[ 0 ].focus();
 
 	// jQuery trigger, which calls DOM focus
 	order = 0;
@@ -2187,7 +2267,42 @@ QUnit.test( "focusin bubbles", function( assert ) {
 	jQuery( "body" ).off( "focusin.focusinBubblesTest" );
 } );
 
-QUnit.test( "custom events with colons (#3533, #8272)", function( assert ) {
+QUnit.test( "focus does not bubble", function( assert ) {
+	assert.expect( 1 );
+
+	var done = assert.async(),
+		input = jQuery( "<input type='text' />" ).prependTo( "body" );
+
+	// focus the element so DOM focus won't fire
+	input[ 0 ].focus();
+
+	jQuery( "body" ).on( "focus.focusDoesNotBubbleTest", function() {
+		assert.ok( false, "focus doesn't fire on body" );
+	} );
+
+	input.on( "focus.focusDoesNotBubbleTest", function() {
+		assert.ok( true, "focus on the element" );
+	} );
+
+	// DOM focus method
+	input[ 0 ].focus();
+
+	// To make the next focus test work, we need to take focus off the input.
+	// This will fire another focusin event, so set order to reflect that.
+	jQuery( "#text1" )[ 0 ].focus();
+
+	// jQuery trigger, which calls DOM focus
+	input.trigger( "focus" );
+
+	input.remove();
+	jQuery( "body" ).off( "focus.focusDoesNotBubbleTest" );
+
+	setTimeout( function() {
+		done();
+	}, 50 );
+} );
+
+QUnit.test( "custom events with colons (trac-3533, trac-8272)", function( assert ) {
 	assert.expect( 1 );
 
 	var tab = jQuery( "<table><tr><td>trigger</td></tr></table>" ).appendTo( "body" );
@@ -2293,7 +2408,7 @@ QUnit.test( ".on and .off", function( assert ) {
 
 	// We should have removed all the event handlers ... kinda hacky way to check this
 	data = jQuery.data[ jQuery( "#onandoff" )[ 0 ].expando ] || {};
-	assert.equal( data[ "events" ], undefined, "no events left" );
+	assert.equal( data.events, undefined, "no events left" );
 
 	$onandoff.remove();
 } );
@@ -2367,10 +2482,10 @@ QUnit.test( "special on name mapping", function( assert ) {
 		.trigger( "gutfeeling" )	// This one should not
 		.remove();
 
-	delete jQuery.event.special[ "gutfeeling" ];
+	delete jQuery.event.special.gutfeeling;
 } );
 
-QUnit.test( ".on and .off, selective mixed removal (#10705)", function( assert ) {
+QUnit.test( ".on and .off, selective mixed removal (trac-10705)", function( assert ) {
 	assert.expect( 7 );
 
 	var timingx = function( e ) {
@@ -2392,7 +2507,27 @@ QUnit.test( ".on and .off, selective mixed removal (#10705)", function( assert )
 		.trigger( "click" );	// 0
 } );
 
-QUnit.test( ".on( event-map, null-selector, data ) #11130", function( assert ) {
+QUnit.test( "special interference with Object.prototype", function( assert ) {
+	assert.expect( 1 );
+
+	var triggered = false;
+
+	Object.prototype.jqfake = {
+		trigger: function() {
+			triggered = true;
+		}
+	};
+
+	jQuery( "<div></div>" )
+		.appendTo( "#qunit-fixture" )
+		.trigger( "jqfake" );
+
+	delete Object.prototype.jqfake;
+
+	assert.ok( !triggered, "Object.prototype.jqfake.trigger not called" );
+} );
+
+QUnit.test( ".on( event-map, null-selector, data ) trac-11130", function( assert ) {
 
 	assert.expect( 1 );
 
@@ -2408,7 +2543,7 @@ QUnit.test( ".on( event-map, null-selector, data ) #11130", function( assert ) {
 	$p.on( map, null, data ).trigger( "foo" );
 } );
 
-QUnit.test( "clone() delegated events (#11076)", function( assert ) {
+QUnit.test( "clone() delegated events (trac-11076)", function( assert ) {
 	assert.expect( 3 );
 
 	var counter = { "center": 0, "fold": 0, "centerfold": 0 },
@@ -2508,7 +2643,9 @@ QUnit.test( "addProp extensions", function( assert ) {
 	fireNative( $fixture[ 0 ], "click" );
 	$fixture.off( "click" );
 
-	jQuery.event.addProp( "testProperty", function() { return 42; } );
+	jQuery.event.addProp( "testProperty", function() {
+		return 42;
+	} );
 
 	// Trigger a native click and ensure the property is set
 	$fixture.on( "click", function( event ) {
@@ -2561,7 +2698,6 @@ testIframe(
 		assert.expect( 1 );
 
 		var done = assert.async(),
-			focus = false,
 			input = jQuery( frameDoc ).find( "#frame-input" );
 
 		// Create a focusin handler on the parent; shouldn't affect the iframe's fate
@@ -2587,15 +2723,7 @@ testIframe(
 		// Remove body handler manually since it's outside the fixture
 		jQuery( "body" ).off( "focusin.iframeTest" );
 
-		setTimeout( function() {
-
-			// DOM focus is unreliable in TestSwarm
-			if ( QUnit.isSwarm && !focus ) {
-				assert.ok( true, "GAP: Could not observe focus change" );
-			}
-
-			done();
-		}, 50 );
+		setTimeout( done, 50 );
 	}
 );
 
@@ -2617,11 +2745,6 @@ QUnit.test( "focusin on document & window", function( assert ) {
 	jQuery( document ).on( "focusout", increment );
 
 	input[ 0 ].blur();
-
-	// DOM focus is unreliable in TestSwarm
-	if ( QUnit.isSwarm && counter === 0 ) {
-		assert.ok( true, "GAP: Could not observe focus change" );
-	}
 
 	assert.strictEqual( counter, 2,
 		"focusout handlers on document/window fired once only" );
@@ -2652,6 +2775,10 @@ QUnit.test( "element removed during focusout (gh-4417)", function( assert ) {
 	button[ 0 ].blur = function() {
 		jQuery.cleanData( [ this ] );
 		this.parentNode.removeChild( this );
+
+		// Redefine `blur` to avoid a hard crash in Karma tests that stop
+		// the test runner in case this test fails.
+		this.blur = jQuery.noop;
 	};
 
 	button[ 0 ].click();
@@ -2745,7 +2872,7 @@ QUnit.test( "trigger click on checkbox, fires change event", function( assert ) 
 	} ).trigger( "click" );
 } );
 
-QUnit.test( "Namespace preserved when passed an Event (#12739)", function( assert ) {
+QUnit.test( "Namespace preserved when passed an Event (trac-12739)", function( assert ) {
 	assert.expect( 4 );
 
 	var markup = jQuery(
@@ -2833,7 +2960,7 @@ QUnit.test( "make sure events cloned correctly", function( assert ) {
 	clone.find( "#check1" ).trigger( "change" ); // 0 events should fire
 } );
 
-QUnit.test( "String.prototype.namespace does not cause trigger() to throw (#13360)", function( assert ) {
+QUnit.test( "String.prototype.namespace does not cause trigger() to throw (trac-13360)", function( assert ) {
 	assert.expect( 1 );
 	var errored = false;
 
@@ -2848,7 +2975,7 @@ QUnit.test( "String.prototype.namespace does not cause trigger() to throw (#1336
 	delete String.prototype.namespace;
 } );
 
-QUnit.test( "Inline event result is returned (#13993)", function( assert ) {
+QUnit.test( "Inline event result is returned (trac-13993)", function( assert ) {
 	assert.expect( 1 );
 
 	var result = jQuery( "<p onclick='return 42'>hello</p>" ).triggerHandler( "click" );
@@ -2911,20 +3038,8 @@ QUnit.test( "preventDefault() on focusin does not throw exception", function( as
 			"Preventing default on focusin throws no exception" );
 
 		done();
-		done = null;
 	} );
 	input.trigger( "focus" );
-
-	// DOM focus is unreliable in TestSwarm; set a simulated event workaround timeout
-	setTimeout( function() {
-		if ( !done ) {
-			return;
-		}
-		input[ 0 ].addEventListener( "click", function( nativeEvent ) {
-			jQuery.event.simulate( "focusin", this, jQuery.event.fix( nativeEvent ) );
-		} );
-		input[ 0 ].click();
-	}, QUnit.config.testTimeout / 4 || 1000 );
 } );
 
 QUnit.test( ".on('focus', fn) on a text node doesn't throw", function( assert ) {
@@ -2997,11 +3112,11 @@ QUnit.test(
 				spy.immediate = sinon.stub( event.originalEvent, "stopImmediatePropagation" );
 				event.stopImmediatePropagation();
 			} )
-			.on( "simulated", function( event ) {
+			.on( "simulated", function() {
 				assert.ok( false, "simulated event immediate propagation stopped" );
 			} );
 		outer
-			.on( "simulated", function( event ) {
+			.on( "simulated", function() {
 				assert.ok( false, "simulated event propagation stopped" );
 			} );
 
@@ -3064,15 +3179,9 @@ QUnit.test( "trigger('click') on radio passes extra params", function( assert ) 
 QUnit.test( "focusout/focusin support", function( assert ) {
 	assert.expect( 6 );
 
-	var focus,
-		parent = jQuery( "<div>" ),
+	var parent = jQuery( "<div>" ),
 		input = jQuery( "<input>" ),
-		inputExternal = jQuery( "<input>" ),
-
-		// Support: IE <=9 - 11+
-		// focus and blur events are asynchronous; this is the resulting mess.
-		// The browser window must be topmost for this to work properly!!
-		done = assert.async();
+		inputExternal = jQuery( "<input>" );
 
 	parent.append( input );
 	jQuery( "#qunit-fixture" ).append( parent ).append( inputExternal );
@@ -3080,118 +3189,84 @@ QUnit.test( "focusout/focusin support", function( assert ) {
 	// initially, lose focus
 	inputExternal[ 0 ].focus();
 
-	setTimeout( function() {
-		parent
-			.on( "focus", function() {
-				assert.ok( false, "parent: focus not fired" );
-			} )
-			.on( "focusin", function() {
-				assert.ok( true, "parent: focusin fired" );
-			} )
-			.on( "blur", function() {
-				assert.ok( false, "parent: blur not fired" );
-			} )
-			.on( "focusout", function() {
-				assert.ok( true, "parent: focusout fired" );
-			} );
+	parent
+		.on( "focus", function() {
+			assert.ok( false, "parent: focus not fired" );
+		} )
+		.on( "focusin", function() {
+			assert.ok( true, "parent: focusin fired" );
+		} )
+		.on( "blur", function() {
+			assert.ok( false, "parent: blur not fired" );
+		} )
+		.on( "focusout", function() {
+			assert.ok( true, "parent: focusout fired" );
+		} );
 
-		input
-			.on( "focus", function() {
-				assert.ok( true, "element: focus fired" );
-			} )
-			.on( "focusin", function() {
-				assert.ok( true, "element: focusin fired" );
-				focus = true;
-			} )
-			.on( "blur", function() {
-				assert.ok( true, "parent: blur fired" );
-			} )
-			.on( "focusout", function() {
-				assert.ok( true, "element: focusout fired" );
-			} );
+	input
+		.on( "focus", function() {
+			assert.ok( true, "element: focus fired" );
+		} )
+		.on( "focusin", function() {
+			assert.ok( true, "element: focusin fired" );
+			focus = true;
+		} )
+		.on( "blur", function() {
+			assert.ok( true, "parent: blur fired" );
+		} )
+		.on( "focusout", function() {
+			assert.ok( true, "element: focusout fired" );
+		} );
 
-		// gain focus
-		input[ 0 ].focus();
+	// gain focus
+	input[ 0 ].focus();
 
-		// then lose it
-		inputExternal[ 0 ].focus();
+	// then lose it
+	inputExternal[ 0 ].focus();
 
-		setTimeout( function() {
-
-			// DOM focus is unreliable in TestSwarm
-			if ( QUnit.isSwarm && !focus ) {
-				assert.ok( true, "GAP: Could not observe focus change" );
-				assert.ok( true, "GAP: Could not observe focus change" );
-				assert.ok( true, "GAP: Could not observe focus change" );
-				assert.ok( true, "GAP: Could not observe focus change" );
-				assert.ok( true, "GAP: Could not observe focus change" );
-				assert.ok( true, "GAP: Could not observe focus change" );
-			}
-
-			// cleanup
-			parent.off();
-			input.off();
-
-			done();
-		}, 50 );
-	}, 50 );
+	// cleanup
+	parent.off();
+	input.off();
 } );
 
-QUnit.test( "focus-blur order (#12868)", function( assert ) {
+QUnit.test( "focus-blur order (trac-12868)", function( assert ) {
 	assert.expect( 5 );
 
 	var order,
 		$text = jQuery( "#text1" ),
-		$radio = jQuery( "#radio1" ),
-
-		// Support: IE <=9 - 11+
-		// focus and blur events are asynchronous; this is the resulting mess.
-		// The browser window must be topmost for this to work properly!!
-		done = assert.async();
+		$radio = jQuery( "#radio1" );
 
 	$radio[ 0 ].focus();
 
-	setTimeout( function() {
+	$text
+		.on( "focus", function() {
+			assert.equal( order++, 1, "text focus" );
+		} )
+		.on( "blur", function() {
+			assert.equal( order++, 0, "text blur" );
+		} );
+	$radio
+		.on( "focus", function() {
+			assert.equal( order++, 1, "radio focus" );
+		} )
+		.on( "blur", function() {
+			assert.equal( order++, 0, "radio blur" );
+		} );
 
-		$text
-			.on( "focus", function() {
-				assert.equal( order++, 1, "text focus" );
-			} )
-			.on( "blur", function() {
-				assert.equal( order++, 0, "text blur" );
-			} );
-		$radio
-			.on( "focus", function() {
-				assert.equal( order++, 1, "radio focus" );
-			} )
-			.on( "blur", function() {
-				assert.equal( order++, 0, "radio blur" );
-			} );
+	// Enabled input getting focus
+	order = 0;
+	assert.equal( document.activeElement, $radio[ 0 ], "radio has focus" );
+	$text.trigger( "focus" );
 
-		// Enabled input getting focus
-		order = 0;
-		assert.equal( document.activeElement, $radio[ 0 ], "radio has focus" );
-		$text.trigger( "focus" );
-		setTimeout( function() {
+	assert.equal( document.activeElement, $text[ 0 ], "text has focus" );
 
-			// DOM focus is unreliable in TestSwarm
-			if ( QUnit.isSwarm && order === 0 ) {
-				assert.ok( true, "GAP: Could not observe focus change" );
-				assert.ok( true, "GAP: Could not observe focus change" );
-			}
+	// Run handlers without native method on an input
+	order = 1;
+	$radio.triggerHandler( "focus" );
 
-			assert.equal( document.activeElement, $text[ 0 ], "text has focus" );
-
-			// Run handlers without native method on an input
-			order = 1;
-			$radio.triggerHandler( "focus" );
-
-			// Clean up
-			$text.off();
-			$radio.off();
-			done();
-		}, 50 );
-	}, 50 );
+	// Clean up
+	$text.off();
+	$radio.off();
 } );
 
 QUnit.test( "Event handling works with multiple async focus events (gh-4350)", function( assert ) {
@@ -3199,10 +3274,6 @@ QUnit.test( "Event handling works with multiple async focus events (gh-4350)", f
 
 	var remaining = 3,
 		input = jQuery( "#name" ),
-
-		// Support: IE <=9 - 11+
-		// focus and blur events are asynchronous; this is the resulting mess.
-		// The browser window must be topmost for this to work properly!!
 		done = assert.async();
 
 	input
@@ -3212,6 +3283,17 @@ QUnit.test( "Event handling works with multiple async focus events (gh-4350)", f
 			if ( remaining > 0 ) {
 				input.trigger( "blur" );
 			} else {
+
+				if ( QUnit.isIE ) {
+
+					// Support: <=IE 11+
+					// In IE, one of the blurs sometimes triggers a focus on body
+					// which in turn restores focus to the input, leading to 4 assertions
+					// firing instead of three. This only happens if other tests are
+					// running on the same test page. Avoid this issue in tests by removing
+					// the handler early.
+					input.off( "focus" );
+				}
 				done();
 			}
 		} )
@@ -3223,18 +3305,45 @@ QUnit.test( "Event handling works with multiple async focus events (gh-4350)", f
 
 	// gain focus
 	input.trigger( "focus" );
+} );
 
-	// DOM focus is unreliable in TestSwarm
+// Support: IE <=9 - 11+
+// focus and blur events are asynchronous.
+// The browser window must be topmost for this to work properly!!
+QUnit.test( "async focus queues properly (gh-4859)", function( assert ) {
+	assert.expect( 1 );
+
+	var $text = jQuery( "#text1" ),
+		$radio = jQuery( "#radio1" ),
+		done = assert.async();
+
+	$text.trigger( "focus" );
+	$radio.trigger( "focus" );
+	$text.trigger( "focus" );
+
 	setTimeout( function() {
-		if ( QUnit.isSwarm && remaining === 3 ) {
-			assert.ok( true, "GAP: Could not observe focus change" );
-			assert.ok( true, "GAP: Could not observe focus change" );
-			assert.ok( true, "GAP: Could not observe focus change" );
-			setTimeout( function() {
-				done();
-			} );
-		}
-	} );
+		assert.equal( document.activeElement, $text[ 0 ], "focus follows the last trigger" );
+		done();
+	}, 500 );
+} );
+
+// Support: IE <=9 - 11+
+// focus and blur events are asynchronous.
+// The browser window must be topmost for this to work properly!!
+QUnit.test( "async focus queues properly with blur (gh-4856)", function( assert ) {
+	assert.expect( 1 );
+
+	var $text = jQuery( "#text1" ),
+		done = assert.async();
+
+	$text.trigger( "focus" );
+	$text.trigger( "blur" );
+	$text.trigger( "focus" );
+
+	setTimeout( function() {
+		assert.equal( document.activeElement, $text[ 0 ], "focus-after-blur is respected" );
+		done();
+	}, 500 );
 } );
 
 QUnit.test( "native-backed events preserve trigger data (gh-1741, gh-4139)", function( assert ) {
@@ -3246,12 +3355,7 @@ QUnit.test( "native-backed events preserve trigger data (gh-1741, gh-4139)", fun
 		targets = jQuery( parent[ 0 ].childNodes ),
 		checkbox = jQuery( targets[ 0 ] ),
 		data = [ "arg1", "arg2" ],
-		slice = data.slice,
-
-		// Support: IE <=9 - 11+
-		// focus and blur events are asynchronous; this is the resulting mess.
-		// The browser window must be topmost for this to work properly!!
-		done = assert.async();
+		slice = data.slice;
 
 	// click (gh-4139)
 	assert.strictEqual( targets[ 0 ].checked, false, "checkbox unchecked before click" );
@@ -3277,18 +3381,26 @@ QUnit.test( "native-backed events preserve trigger data (gh-1741, gh-4139)", fun
 		var type = event.type;
 		assert.deepEqual( slice.call( arguments, 1 ), data,
 			type + " handler received correct data" );
+
+		if ( QUnit.isIE && type === "focus" ) {
+
+			// Support: <=IE 11+
+			// In IE, one of the blurs sometimes triggers a focus on body
+			// which in turn restores focus to the input, leading to 4 assertions
+			// firing instead of three. This only happens if other tests are
+			// running on the same test page. Avoid this issue in tests by removing
+			// the handler early.
+			checkbox.off( "focus" );
+		}
 	} );
 	checkbox.trigger( "focus", data );
-	setTimeout( function() {
-		assert.strictEqual( document.activeElement, checkbox[ 0 ],
-			"element focused after focus event (default action)" );
-		checkbox.trigger( "blur", data );
-		setTimeout( function() {
-			assert.notEqual( document.activeElement, checkbox[ 0 ],
-				"element not focused after blur event (default action)" );
-			done();
-		}, 50 );
-	}, 50 );
+
+	assert.strictEqual( document.activeElement, checkbox[ 0 ],
+		"element focused after focus event (default action)" );
+	checkbox.trigger( "blur", data );
+
+	assert.notEqual( document.activeElement, checkbox[ 0 ],
+		"element not focused after blur event (default action)" );
 } );
 
 QUnit.test( "focus change during a focus handler (gh-4382)", function( assert ) {
@@ -3307,6 +3419,7 @@ QUnit.test( "focus change during a focus handler (gh-4382)", function( assert ) 
 	} );
 
 	jQuery( document ).on( "focusin.focusTests", function( ev ) {
+
 		// Support: IE 11+
 		// In IE focus is async so focusin on document is fired multiple times,
 		// for each of the elements. In other browsers it's fired just once, for
@@ -3341,6 +3454,110 @@ QUnit.test( "trigger(focus) works after .on(focus).off(focus) (gh-4867)", functi
 	assert.equal( document.activeElement, input[ 0 ], "input has focus" );
 } );
 
+QUnit.test( "trigger(focus) works after focusing when hidden (gh-4950)", function( assert ) {
+	assert.expect( 1 );
+
+	var input = jQuery( "<input />" );
+
+	input.appendTo( "#qunit-fixture" );
+
+	input
+		.css( "display", "none" )
+		.trigger( "focus" )
+		.css( "display", "" )
+		.trigger( "focus" );
+
+	assert.equal( document.activeElement, input[ 0 ], "input has focus" );
+} );
+
+QUnit.test( "trigger(focus) fires native & jQuery handlers (gh-5015)", function( assert ) {
+	assert.expect( 3 );
+
+	var input = jQuery( "<input />" ),
+
+		// Support: IE 9 - 11+
+		// focus is async in IE; we now emulate it via sync focusin in jQuery
+		// but this test also attaches native handlers.
+		done = assert.async( 3 );
+
+	input.appendTo( "#qunit-fixture" );
+
+	input[ 0 ].addEventListener( "focus", function() {
+		assert.ok( true, "1st native handler fired" );
+		done();
+	} );
+
+	input.on( "focus", function() {
+		assert.ok( true, "jQuery handler fired" );
+		done();
+	} );
+
+	input[ 0 ].addEventListener( "focus", function() {
+		assert.ok( true, "2nd native handler fired" );
+		done();
+	} );
+
+	input.trigger( "focus" );
+} );
+
+QUnit.test( "duplicate native blur doesn't crash (gh-5459)", function( assert ) {
+	assert.expect( 4 );
+
+	function patchAddEventListener( elem ) {
+		var nativeAddEvent = elem[ 0 ].addEventListener;
+
+		// Support: Firefox 124+
+		// In Firefox, alert displayed just before blurring an element
+		// dispatches the native blur event twice which tripped the jQuery
+		// logic. We cannot call `alert()` in unit tests; simulate the
+		// behavior by overwriting the native `addEventListener` with
+		// a version that calls blur handlers twice.
+		//
+		// Such a simulation allows us to test whether `leverageNative`
+		// logic correctly differentiates between data saved by outer/inner
+		// handlers, so it's useful even without the Firefox bug.
+		elem[ 0 ].addEventListener = function( eventName, handler ) {
+			var finalHandler;
+			if ( eventName === "blur" ) {
+				finalHandler = function wrappedHandler() {
+					handler.apply( this, arguments );
+					return handler.apply( this, arguments );
+				};
+			} else {
+				finalHandler = handler;
+			}
+			return nativeAddEvent.call( this, eventName, finalHandler );
+		};
+	}
+
+	function runTest( handler, message ) {
+		var button = jQuery( "<button></button>" );
+
+		patchAddEventListener( button );
+		button.appendTo( "#qunit-fixture" );
+
+		if ( handler ) {
+			button.on( "blur", handler );
+		}
+		button.on( "focus", function() {
+			button.trigger( "blur" );
+			assert.ok( true, "Did not crash (" + message + ")" );
+		} );
+		button.trigger( "focus" );
+	}
+
+	runTest( undefined, "no prior handler" );
+	runTest( function() {
+		return true;
+	}, "prior handler returning true" );
+	runTest( function() {
+		return { length: 42 };
+	}, "prior handler returning an array-like" );
+	runTest( function() {
+		return { value: 42 };
+	}, "prior handler returning `{ value }`" );
+} );
+
 // TODO replace with an adaptation of
 // https://github.com/jquery/jquery/pull/1367/files#diff-a215316abbaabdf71857809e8673ea28R2464
 ( function() {
@@ -3349,10 +3566,13 @@ QUnit.test( "trigger(focus) works after .on(focus).off(focus) (gh-4867)", functi
 			checkbox: "<input type='checkbox'>",
 			radio: "<input type='radio'>"
 		},
-		makeTestFor3751
+		function( type, html ) {
+			makeTestForGh3751( type, html );
+			makeTestForGh5015( type, html );
+		}
 	);
 
-	function makeTestFor3751( type, html ) {
+	function makeTestForGh3751( type, html ) {
 		var testName = "native-backed namespaced clicks are handled correctly (gh-3751) - " + type;
 		QUnit.test( testName, function( assert ) {
 			assert.expect( 2 );
@@ -3377,6 +3597,32 @@ QUnit.test( "trigger(focus) works after .on(focus).off(focus) (gh-4867)", functi
 				} );
 
 			target.trigger( "click.fired" );
+		} );
+	}
+
+	function makeTestForGh5015( type, html ) {
+		var testName = "trigger(click) fires native & jQuery handlers (gh-5015) - " + type;
+		QUnit.test( testName, function( assert ) {
+			assert.expect( 3 );
+
+			var parent = supportjQuery( "<div class='parent'>" + html + "</div>" ),
+				input = jQuery( parent[ 0 ].firstChild );
+
+			parent.appendTo( "#qunit-fixture" );
+
+			input[ 0 ].addEventListener( "click", function() {
+				assert.ok( true, "1st native handler fired" );
+			} );
+
+			input.on( "click", function() {
+				assert.ok( true, "jQuery handler fired" );
+			} );
+
+			input[ 0 ].addEventListener( "click", function() {
+				assert.ok( true, "2nd native handler fired" );
+			} );
+
+			input.trigger( "click" );
 		} );
 	}
 } )();

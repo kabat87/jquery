@@ -1,7 +1,8 @@
 QUnit.module( "deprecated", { afterEach: moduleTeardown } );
 
+if ( includesModule( "deprecated" ) ) {
 
-QUnit[ jQuery.fn.bind ? "test" : "skip" ]( "bind/unbind", function( assert ) {
+QUnit.test( "bind/unbind", function( assert ) {
 	assert.expect( 4 );
 
 	var markup = jQuery(
@@ -22,7 +23,7 @@ QUnit[ jQuery.fn.bind ? "test" : "skip" ]( "bind/unbind", function( assert ) {
 		.remove();
 } );
 
-QUnit[ jQuery.fn.delegate ? "test" : "skip" ]( "delegate/undelegate", function( assert ) {
+QUnit.test( "delegate/undelegate", function( assert ) {
 	assert.expect( 2 );
 
 	var markup = jQuery(
@@ -41,12 +42,16 @@ QUnit[ jQuery.fn.delegate ? "test" : "skip" ]( "delegate/undelegate", function( 
 		.remove();
 } );
 
-QUnit[ jQuery.fn.hover ? "test" : "skip" ]( "hover() mouseenter mouseleave", function( assert ) {
+QUnit.test( "hover() mouseenter mouseleave", function( assert ) {
 	assert.expect( 1 );
 
 	var times = 0,
-		handler1 = function() { ++times; },
-		handler2 = function() { ++times; };
+		handler1 = function() {
+ ++times;
+},
+		handler2 = function() {
+ ++times;
+};
 
 	jQuery( "#firstp" )
 		.hover( handler1, handler2 )
@@ -61,7 +66,7 @@ QUnit[ jQuery.fn.hover ? "test" : "skip" ]( "hover() mouseenter mouseleave", fun
 	assert.equal( times, 4, "hover handlers fired" );
 } );
 
-QUnit[ jQuery.fn.click ? "test" : "skip" ]( "trigger() shortcuts", function( assert ) {
+QUnit.test( "trigger() shortcuts", function( assert ) {
 	assert.expect( 5 );
 
 	var counter, clickCounter,
@@ -77,7 +82,7 @@ QUnit[ jQuery.fn.click ? "test" : "skip" ]( "trigger() shortcuts", function( ass
 	elem.remove();
 
 	jQuery( "#check1" ).click( function() {
-		assert.ok( true, "click event handler for checkbox gets fired twice, see #815" );
+		assert.ok( true, "click event handler for checkbox gets fired twice, see trac-815" );
 	} ).click();
 
 	counter = 0;
@@ -88,15 +93,15 @@ QUnit[ jQuery.fn.click ? "test" : "skip" ]( "trigger() shortcuts", function( ass
 	assert.equal( counter, 1, "Check that click, triggers onclick event handler also" );
 
 	clickCounter = 0;
-	jQuery( "#simon1" )[ 0 ].onclick = function() {
+	jQuery( "#john1" )[ 0 ].onclick = function() {
 		clickCounter++;
 	};
-	jQuery( "#simon1" ).click();
+	jQuery( "#john1" ).click();
 	assert.equal( clickCounter, 1, "Check that click, triggers onclick event handler on an a tag also" );
 } );
 
-if ( jQuery.ajax && jQuery.fn.ajaxSend ) {
-	ajaxTest( "jQuery.ajax() - events with context", 12, function( assert ) {
+if ( includesModule( "ajax" ) ) {
+	ajaxTest( "Ajax events aliases (with context)", 12, function( assert ) {
 		var context = document.createElement( "div" );
 
 		function event( e ) {
@@ -134,7 +139,7 @@ if ( jQuery.ajax && jQuery.fn.ajaxSend ) {
 	} );
 }
 
-QUnit[ jQuery.fn.click ? "test" : "skip" ]( "Event aliases", function( assert ) {
+QUnit.test( "Event aliases", function( assert ) {
 
 	// Explicitly skipping focus/blur events due to their flakiness
 	var	$elem = jQuery( "<div></div>" ).appendTo( "#qunit-fixture" ),
@@ -152,7 +157,7 @@ QUnit[ jQuery.fn.click ? "test" : "skip" ]( "Event aliases", function( assert ) 
 	} );
 } );
 
-QUnit[ jQuery.proxy ? "test" : "skip" ]( "jQuery.proxy", function( assert ) {
+QUnit.test( "jQuery.proxy", function( assert ) {
 	assert.expect( 9 );
 
 	var test2, test3, test4, fn, cb,
@@ -199,3 +204,18 @@ QUnit[ jQuery.proxy ? "test" : "skip" ]( "jQuery.proxy", function( assert ) {
 	cb = jQuery.proxy( fn, null, "arg1", "arg2" );
 	cb.call( thisObject, "arg3" );
 } );
+
+if ( includesModule( "selector" ) ) {
+	QUnit[ QUnit.jQuerySelectors ? "test" : "skip" ](
+		"jQuery.expr[ \":\" ], jQuery.expr.filters",
+		function( assert ) {
+			assert.expect( 2 );
+
+			assert.strictEqual( jQuery.expr[ ":" ], jQuery.expr.pseudos,
+				"jQuery.expr[ \":\" ] is an alias of jQuery.expr.pseudos" );
+			assert.strictEqual( jQuery.expr.filters, jQuery.expr.pseudos,
+				"jQuery.expr.filters is an alias of jQuery.expr.pseudos" );
+		} );
+}
+
+}

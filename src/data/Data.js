@@ -1,9 +1,9 @@
-import jQuery from "../core.js";
-import camelCase from "../core/camelCase.js";
-import rnothtmlwhite from "../var/rnothtmlwhite.js";
-import acceptData from "./var/acceptData.js";
+import { jQuery } from "../core.js";
+import { camelCase } from "../core/camelCase.js";
+import { rnothtmlwhite } from "../var/rnothtmlwhite.js";
+import { acceptData } from "./var/acceptData.js";
 
-function Data() {
+export function Data() {
 	this.expando = jQuery.expando + Data.uid++;
 }
 
@@ -21,7 +21,7 @@ Data.prototype = {
 			value = Object.create( null );
 
 			// We can accept data for non-element nodes in modern browsers,
-			// but we should not, see #8335.
+			// but we should not, see trac-8335.
 			// Always return an empty object.
 			if ( acceptData( owner ) ) {
 
@@ -61,7 +61,7 @@ Data.prototype = {
 				cache[ camelCase( prop ) ] = data[ prop ];
 			}
 		}
-		return cache;
+		return value;
 	},
 	get: function( owner, key ) {
 		return key === undefined ?
@@ -153,5 +153,3 @@ Data.prototype = {
 		return cache !== undefined && !jQuery.isEmptyObject( cache );
 	}
 };
-
-export default Data;

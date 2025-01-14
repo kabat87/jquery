@@ -1,6 +1,8 @@
-import jQuery from "../core.js";
-import document from "../var/document.js";
-import sort from "../var/sort.js";
+import { jQuery } from "../core.js";
+import { document } from "../var/document.js";
+import { sort } from "../var/sort.js";
+import { splice } from "../var/splice.js";
+import { slice } from "../var/slice.js";
 
 var hasDuplicate;
 
@@ -80,9 +82,13 @@ jQuery.uniqueSort = function( results ) {
 			}
 		}
 		while ( j-- ) {
-			results.splice( duplicates[ j ], 1 );
+			splice.call( results, duplicates[ j ], 1 );
 		}
 	}
 
 	return results;
+};
+
+jQuery.fn.uniqueSort = function() {
+	return this.pushStack( jQuery.uniqueSort( slice.apply( this ) ) );
 };

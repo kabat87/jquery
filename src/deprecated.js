@@ -1,5 +1,5 @@
-import jQuery from "./core.js";
-import slice from "./var/slice.js";
+import { jQuery } from "./core.js";
+import { slice } from "./var/slice.js";
 
 import "./deprecated/ajax-event-alias.js";
 import "./deprecated/event.js";
@@ -42,3 +42,7 @@ jQuery.holdReady = function( hold ) {
 		jQuery.ready( true );
 	}
 };
+
+jQuery.expr[ ":" ] = jQuery.expr.filters = jQuery.expr.pseudos;
+
+export { jQuery, jQuery as $ };

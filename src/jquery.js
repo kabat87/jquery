@@ -1,4 +1,4 @@
-import jQuery from "./core.js";
+import { jQuery } from "./core.js";
 
 import "./selector.js";
 import "./traversing.js";
@@ -23,6 +23,7 @@ import "./ajax.js";
 import "./ajax/xhr.js";
 import "./ajax/script.js";
 import "./ajax/jsonp.js";
+import "./ajax/binary.js";
 import "./ajax/load.js";
 import "./core/parseXML.js";
 import "./core/parseHTML.js";
@@ -34,4 +35,4 @@ import "./deprecated.js";
 import "./exports/amd.js";
 import "./exports/global.js";
 
-export default jQuery;
+export { jQuery, jQuery as $ };

@@ -1,11 +1,10 @@
-import jQuery from "./core.js";
-import access from "./core/access.js";
-import documentElement from "./var/documentElement.js";
-import isWindow from "./var/isWindow.js";
+import { jQuery } from "./core.js";
+import { access } from "./core/access.js";
+import { documentElement } from "./var/documentElement.js";
+import { isWindow } from "./var/isWindow.js";
 
 import "./core/init.js";
 import "./css.js";
-import "./selector.js"; // contains
 
 jQuery.offset = {
 	setOffset: function( elem, options, i ) {
@@ -122,12 +121,13 @@ jQuery.fn.extend( {
 			doc = elem.ownerDocument;
 			offsetParent = elem.offsetParent || doc.documentElement;
 			while ( offsetParent &&
-				( offsetParent === doc.body || offsetParent === doc.documentElement ) &&
+				offsetParent !== doc.documentElement &&
 				jQuery.css( offsetParent, "position" ) === "static" ) {
 
-				offsetParent = offsetParent.parentNode;
+				offsetParent = offsetParent.offsetParent || doc.documentElement;
 			}
-			if ( offsetParent && offsetParent !== elem && offsetParent.nodeType === 1 ) {
+			if ( offsetParent && offsetParent !== elem && offsetParent.nodeType === 1 &&
+				jQuery.css( offsetParent, "position" ) !== "static" ) {
 
 				// Incorporate borders into its offset, since they are outside its content origin
 				parentOffset = jQuery( offsetParent ).offset();
@@ -198,4 +198,4 @@ jQuery.each( { scrollLeft: "pageXOffset", scrollTop: "pageYOffset" }, function( 
 	};
 } );
 
-export default jQuery;
+export { jQuery, jQuery as $ };

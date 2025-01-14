@@ -1,8 +1,8 @@
-import jQuery from "./core.js";
-import access from "./core/access.js";
-import camelCase from "./core/camelCase.js";
-import dataPriv from "./data/var/dataPriv.js";
-import dataUser from "./data/var/dataUser.js";
+import { jQuery } from "./core.js";
+import { access } from "./core/access.js";
+import { camelCase } from "./core/camelCase.js";
+import { dataPriv } from "./data/var/dataPriv.js";
+import { dataUser } from "./data/var/dataUser.js";
 
 //	Implementation Summary
 //
@@ -105,7 +105,7 @@ jQuery.fn.extend( {
 					while ( i-- ) {
 
 						// Support: IE 11+
-						// The attrs elements can be null (#14894)
+						// The attrs elements can be null (trac-14894)
 						if ( attrs[ i ] ) {
 							name = attrs[ i ].name;
 							if ( name.indexOf( "data-" ) === 0 ) {
@@ -172,4 +172,4 @@ jQuery.fn.extend( {
 	}
 } );
 
-export default jQuery;
+export { jQuery, jQuery as $ };

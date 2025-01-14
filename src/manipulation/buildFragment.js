@@ -1,16 +1,17 @@
-import jQuery from "../core.js";
-import toType from "../core/toType.js";
-import isAttached from "../core/isAttached.js";
-import arr from "../var/arr.js";
-import rtagName from "./var/rtagName.js";
-import rscriptType from "./var/rscriptType.js";
-import wrapMap from "./wrapMap.js";
-import getAll from "./getAll.js";
-import setGlobalEval from "./setGlobalEval.js";
+import { jQuery } from "../core.js";
+import { toType } from "../core/toType.js";
+import { isAttached } from "../core/isAttached.js";
+import { arr } from "../var/arr.js";
+import { rtagName } from "./var/rtagName.js";
+import { rscriptType } from "./var/rscriptType.js";
+import { wrapMap } from "./wrapMap.js";
+import { getAll } from "./getAll.js";
+import { setGlobalEval } from "./setGlobalEval.js";
+import { isArrayLike } from "../core/isArrayLike.js";
 
 var rhtml = /<|&#?\w+;/;
 
-function buildFragment( elems, context, scripts, selection, ignored ) {
+export function buildFragment( elems, context, scripts, selection, ignored ) {
 	var elem, tmp, tag, wrap, attached, j,
 		fragment = context.createDocumentFragment(),
 		nodes = [],
@@ -23,7 +24,7 @@ function buildFragment( elems, context, scripts, selection, ignored ) {
 		if ( elem || elem === 0 ) {
 
 			// Add nodes directly
-			if ( toType( elem ) === "object" ) {
+			if ( toType( elem ) === "object" && ( elem.nodeType || isArrayLike( elem ) ) ) {
 				jQuery.merge( nodes, elem.nodeType ? [ elem ] : elem );
 
 			// Convert non-html into a text node
@@ -51,7 +52,7 @@ function buildFragment( elems, context, scripts, selection, ignored ) {
 				// Remember the top-level container
 				tmp = fragment.firstChild;
 
-				// Ensure the created nodes are orphaned (#12392)
+				// Ensure the created nodes are orphaned (trac-12392)
 				tmp.textContent = "";
 			}
 		}
@@ -94,5 +95,3 @@ function buildFragment( elems, context, scripts, selection, ignored ) {
 
 	return fragment;
 }
-
-export default buildFragment;

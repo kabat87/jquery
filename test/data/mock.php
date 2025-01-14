@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Keep in sync with /test/middleware-mockserver.js
+ * Keep in sync with /test/middleware-mockserver.cjs
  */
 function cleanCallback( $callback ) {
 	return preg_replace( '/[^a-z0-9_]/i', '', $callback );
@@ -124,6 +124,17 @@ QUnit.assert.ok( true, "mock executed");';
 		echo "$cleanCallback($text)\n";
 	}
 
+	protected function formData( $req ) {
+		$prefix = 'multipart/form-data; boundary=--';
+		$contentTypeValue = $req->headers[ 'CONTENT-TYPE' ];
+		if ( substr( $contentTypeValue, 0, strlen( $prefix ) ) === $prefix ) {
+			echo 'key1 -> ' . $_POST[ 'key1' ] . ', key2 -> ' . $_POST[ 'key2' ];
+		} else {
+			echo 'Incorrect Content-Type: ' . $contentTypeValue .
+				"\nExpected prefix: " . $prefix;
+		}
+	}
+
 	protected function error( $req ) {
 		header( 'HTTP/1.0 400 Bad Request' );
 		if ( isset( $req->query['json'] ) ) {
@@ -215,7 +226,7 @@ QUnit.assert.ok( true, "mock executed");';
 	}
 
 	protected function cspFrame( $req ) {
-		header( "Content-Security-Policy: default-src 'self'; report-uri ./mock.php?action=cspLog" );
+		header( "Content-Security-Policy: default-src 'self'; require-trusted-types-for 'script'; report-uri ./mock.php?action=cspLog" );
 		header( 'Content-type: text/html' );
 		echo file_get_contents( __DIR__ . '/csp.include.html' );
 	}
@@ -228,7 +239,7 @@ QUnit.assert.ok( true, "mock executed");';
 	}
 
 	protected function cspAjaxScript( $req ) {
-		header( "Content-Security-Policy: script-src 'self'; report-uri /base/test/data/mock.php?action=cspLog" );
+		header( "Content-Security-Policy: script-src 'self'; report-uri ./mock.php?action=cspLog" );
 		header( 'Content-type: text/html' );
 		echo file_get_contents( __DIR__ . '/csp-ajax-script.html' );
 	}
@@ -239,7 +250,18 @@ QUnit.assert.ok( true, "mock executed");';
 
 	protected function cspClean( $req ) {
 		file_put_contents( $this->cspFile, '' );
-		unlink( $this->cspFile );
+	}
+
+	protected function trustedHtml( $req ) {
+		header( "Content-Security-Policy: require-trusted-types-for 'script'; report-uri ./mock.php?action=cspLog" );
+		header( 'Content-type: text/html' );
+		echo file_get_contents( __DIR__ . '/trusted-html.html' );
+	}
+
+	protected function trustedTypesAttributes( $req ) {
+		header( "Content-Security-Policy: require-trusted-types-for 'script'; report-uri ./mock.php?action=cspLog" );
+		header( 'Content-type: text/html' );
+		echo file_get_contents( __DIR__ . '/trusted-types-attributes.html' );
 	}
 
 	protected function errorWithScript( $req ) {

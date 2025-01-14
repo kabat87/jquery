@@ -1,13 +1,13 @@
-import jQuery from "./core.js";
-import document from "./var/document.js";
-import rcssNum from "./var/rcssNum.js";
-import rnothtmlwhite from "./var/rnothtmlwhite.js";
-import cssExpand from "./css/var/cssExpand.js";
-import isHiddenWithinTree from "./css/var/isHiddenWithinTree.js";
-import adjustCSS from "./css/adjustCSS.js";
-import cssCamelCase from "./css/cssCamelCase.js";
-import dataPriv from "./data/var/dataPriv.js";
-import showHide from "./css/showHide.js";
+import { jQuery } from "./core.js";
+import { document } from "./var/document.js";
+import { rcssNum } from "./var/rcssNum.js";
+import { rnothtmlwhite } from "./var/rnothtmlwhite.js";
+import { cssExpand } from "./css/var/cssExpand.js";
+import { isHiddenWithinTree } from "./css/var/isHiddenWithinTree.js";
+import { adjustCSS } from "./css/adjustCSS.js";
+import { cssCamelCase } from "./css/cssCamelCase.js";
+import { dataPriv } from "./data/var/dataPriv.js";
+import { showHide } from "./css/showHide.js";
 
 import "./core/init.js";
 import "./queue.js";
@@ -27,7 +27,7 @@ function schedule() {
 		if ( document.hidden === false && window.requestAnimationFrame ) {
 			window.requestAnimationFrame( schedule );
 		} else {
-			window.setTimeout( schedule, jQuery.fx.interval );
+			window.setTimeout( schedule, 13 );
 		}
 
 		jQuery.fx.tick();
@@ -206,7 +206,7 @@ function defaultPrefilter( elem, props, opts ) {
 					hidden = dataShow.hidden;
 				}
 			} else {
-				dataShow = dataPriv.access( elem, "fxshow", { display: restoreDisplay } );
+				dataShow = dataPriv.set( elem, "fxshow", { display: restoreDisplay } );
 			}
 
 			// Store hidden/visible for toggle so `.stop().toggle()` "reverses"
@@ -446,7 +446,7 @@ jQuery.Animation = jQuery.extend( Animation, {
 
 jQuery.speed = function( speed, easing, fn ) {
 	var opt = speed && typeof speed === "object" ? jQuery.extend( {}, speed ) : {
-		complete: fn || !fn && easing ||
+		complete: fn || easing ||
 			typeof speed === "function" && speed,
 		duration: speed,
 		easing: fn && easing || easing && typeof easing !== "function" && easing
@@ -663,7 +663,6 @@ jQuery.fx.timer = function( timer ) {
 	jQuery.fx.start();
 };
 
-jQuery.fx.interval = 13;
 jQuery.fx.start = function() {
 	if ( inProgress ) {
 		return;
@@ -685,4 +684,4 @@ jQuery.fx.speeds = {
 	_default: 400
 };
 
-export default jQuery;
+export { jQuery, jQuery as $ };

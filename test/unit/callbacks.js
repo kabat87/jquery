@@ -4,7 +4,7 @@ QUnit.module( "callbacks", {
 
 ( function() {
 
-if ( !jQuery.Callbacks ) {
+if ( !includesModule( "callbacks" ) ) {
 	return;
 }
 
@@ -19,6 +19,7 @@ var output,
 	outputA = addToOutput( "A" ),
 	outputB = addToOutput( "B" ),
 	outputC = addToOutput( "C" ),
+	/* eslint-disable key-spacing */
 	tests = {
 		"":                   "XABC   X     XABCABCC  X  XBB X   XABA  X   XX",
 		"once":               "XABC   X     X         X  X   X   XABA  X   XX",
@@ -100,7 +101,7 @@ jQuery.each( tests, function( strFlags, resultString ) {
 					assert.strictEqual( cblist.disabled(), true, ".disabled() becomes true" );
 					assert.strictEqual( cblist.locked(), true, "disabling locks" );
 
-					// Emptying while firing (#13517)
+					// Emptying while firing (trac-13517)
 					cblist = jQuery.Callbacks( flags );
 					cblist.add( cblist.empty );
 					cblist.add( function() {
@@ -227,7 +228,9 @@ jQuery.each( tests, function( strFlags, resultString ) {
 					// Return false
 					output = "X";
 					cblist = jQuery.Callbacks( flags );
-					cblist.add( outputA, function() { return false; }, outputB );
+					cblist.add( outputA, function() {
+						return false;
+					}, outputB );
 					cblist.add( outputA );
 					cblist.fire();
 					assert.strictEqual( output, results.shift(), "Callback returning false" );
@@ -269,7 +272,7 @@ QUnit.test( "jQuery.Callbacks( options ) - options are copied", function( assert
 		fn = function() {
 			assert.ok( !( count++ ), "called once" );
 		};
-	options[ "unique" ] = false;
+	options.unique = false;
 	cb.add( fn, fn );
 	cb.fire();
 } );
@@ -364,7 +367,9 @@ QUnit.test( "jQuery.Callbacks() - disabled callback doesn't fire (gh-1790)", fun
 
 	var cb = jQuery.Callbacks(),
 		fired = false,
-		shot = function() { fired = true; };
+		shot = function() {
+			fired = true;
+		};
 
 	cb.disable();
 	cb.empty();
@@ -379,8 +384,12 @@ QUnit.test( "jQuery.Callbacks() - list with memory stays locked (gh-3469)", func
 
 	var cb = jQuery.Callbacks( "memory" ),
 		fired = 0,
-		count1 = function() { fired += 1; },
-		count2 = function() { fired += 10; };
+		count1 = function() {
+			fired += 1;
+		},
+		count2 = function() {
+			fired += 10;
+		};
 
 	cb.add( count1 );
 	cb.fire();

@@ -1,4 +1,4 @@
-import document from "../var/document.js";
+import { document } from "../var/document.js";
 
 var preservedScriptAttributes = {
 	type: true,
@@ -7,21 +7,20 @@ var preservedScriptAttributes = {
 	noModule: true
 };
 
-function DOMEval( code, node, doc ) {
+export function DOMEval( code, node, doc ) {
 	doc = doc || document;
 
 	var i,
 		script = doc.createElement( "script" );
 
 	script.text = code;
-	if ( node ) {
-		for ( i in preservedScriptAttributes ) {
-			if ( node[ i ] ) {
-				script[ i ] = node[ i ];
-			}
+	for ( i in preservedScriptAttributes ) {
+		if ( node && node[ i ] ) {
+			script[ i ] = node[ i ];
 		}
 	}
-	doc.head.appendChild( script ).parentNode.removeChild( script );
-}
 
-export default DOMEval;
+	if ( doc.head.appendChild( script ).parentNode ) {
+		script.parentNode.removeChild( script );
+	}
+}

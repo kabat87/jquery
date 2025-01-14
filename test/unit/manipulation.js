@@ -30,18 +30,18 @@ function manipulationFunctionReturningObj( value ) {
 
 QUnit.test( "text()", function( assert ) {
 
-	assert.expect( 5 );
+	assert.expect( 6 );
 
-	var expected, frag, $newLineTest;
+	var expected, frag, $newLineTest, doc;
 
-	expected = "This link has class=\"blog\": Simon Willison's Weblog";
-	assert.equal( jQuery( "#sap" ).text(), expected, "Check for merged text of more then one element." );
+	expected = "This link has class=\"blog\": Timmy Willison's Weblog";
+	assert.equal( jQuery( "#sap" ).text(), expected, "Check for merged text of more than one element." );
 
 	// Check serialization of text values
 	assert.equal( jQuery( document.createTextNode( "foo" ) ).text(), "foo", "Text node was retrieved from .text()." );
-	assert.notEqual( jQuery( document ).text(), "", "Retrieving text for the document retrieves all text (#10724)." );
+	assert.notEqual( jQuery( document ).text(), "", "Retrieving text for the document retrieves all text (trac-10724)." );
 
-	// Retrieve from document fragments #10864
+	// Retrieve from document fragments trac-10864
 	frag = document.createDocumentFragment();
 	frag.appendChild( document.createTextNode( "foo" ) );
 
@@ -49,16 +49,19 @@ QUnit.test( "text()", function( assert ) {
 
 	$newLineTest = jQuery( "<div>test<br/>testy</div>" ).appendTo( "#moretests" );
 	$newLineTest.find( "br" ).replaceWith( "\n" );
-	assert.equal( $newLineTest.text(), "test\ntesty", "text() does not remove new lines (#11153)" );
+	assert.equal( $newLineTest.text(), "test\ntesty", "text() does not remove new lines (trac-11153)" );
 
 	$newLineTest.remove();
+
+	doc = new DOMParser().parseFromString( "<span>example</span>", "text/html" );
+	assert.equal( jQuery( doc ).text(), "example", "text() on HTMLDocument (gh-5264)" );
 } );
 
 QUnit.test( "text(undefined)", function( assert ) {
 
 	assert.expect( 1 );
 
-	assert.equal( jQuery( "#foo" ).text( "<div" ).text( undefined )[ 0 ].innerHTML, "&lt;div", ".text(undefined) is chainable (#5571)" );
+	assert.equal( jQuery( "#foo" ).text( "<div" ).text( undefined )[ 0 ].innerHTML, "&lt;div", ".text(undefined) is chainable (trac-5571)" );
 } );
 
 function testText( valueObj, assert ) {
@@ -78,16 +81,16 @@ function testText( valueObj, assert ) {
 
 	assert.equal( j[ 2 ].nodeType, 8, "Check node,textnode,comment with text()" );
 
-	// Update multiple elements #11809
+	// Update multiple elements trac-11809
 	expected = "New";
 
 	$multipleElements = jQuery( "<div>Hello</div>" ).add( "<div>World</div>" );
 	$multipleElements.text( expected );
 
-	assert.equal( $multipleElements.eq( 0 ).text(), expected, "text() updates multiple elements (#11809)" );
-	assert.equal( $multipleElements.eq( 1 ).text(), expected, "text() updates multiple elements (#11809)" );
+	assert.equal( $multipleElements.eq( 0 ).text(), expected, "text() updates multiple elements (trac-11809)" );
+	assert.equal( $multipleElements.eq( 1 ).text(), expected, "text() updates multiple elements (trac-11809)" );
 
-	// Prevent memory leaks #11809
+	// Prevent memory leaks trac-11809
 	$childDiv = jQuery( "<div></div>" );
 	$childDiv.data( "leak", true );
 	$parentDiv = jQuery( "<div></div>" );
@@ -107,7 +110,7 @@ QUnit.test( "text(Function) with incoming value", function( assert ) {
 
 	assert.expect( 2 );
 
-	var old = "This link has class=\"blog\": Simon Willison's Weblog";
+	var old = "This link has class=\"blog\": Timmy Willison's Weblog";
 
 	jQuery( "#sap" ).text( function( i, val ) {
 		assert.equal( val, old, "Make sure the incoming value is correct." );
@@ -120,7 +123,7 @@ QUnit.test( "text(Function) with incoming value", function( assert ) {
 function testAppendForObject( valueObj, isFragment, assert ) {
 	var $base,
 		type = isFragment ? " (DocumentFragment)" : " (Element)",
-		text = "This link has class=\"blog\": Simon Willison's Weblog",
+		text = "This link has class=\"blog\": Timmy Willison's Weblog",
 		el = document.getElementById( "sap" ).cloneNode( true ),
 		first = document.getElementById( "first" ),
 		yahoo = document.getElementById( "yahoo" );
@@ -187,7 +190,7 @@ function testAppendForObject( valueObj, isFragment, assert ) {
 
 	assert.equal( $base.clone().append( valueObj( document.getElementById( "form" ).cloneNode( true ) ) ).children( "form" ).length,
 		1,
-		"Check for appending a form (#910)" + type
+		"Check for appending a form (trac-910)" + type
 	);
 }
 
@@ -272,7 +275,7 @@ function testAppend( valueObj, assert ) {
 		.append( valueObj( "<select id='appendSelect2'><option>Test</option></select>" ) );
 	assert.t( "Append Select", "#appendSelect1, #appendSelect2", [ "appendSelect1", "appendSelect2" ] );
 
-	assert.equal( "Two nodes", jQuery( "<div></div>" ).append( "Two", " nodes" ).text(), "Appending two text nodes (#4011)" );
+	assert.equal( "Two nodes", jQuery( "<div></div>" ).append( "Two", " nodes" ).text(), "Appending two text nodes (trac-4011)" );
 	assert.equal( jQuery( "<div></div>" ).append( "1", "", 3 ).text(), "13", "If median is false-like value, subsequent arguments should not be ignored" );
 
 	// using contents will get comments regular, text, and comment nodes
@@ -310,7 +313,7 @@ QUnit.test( "append(Function)", function( assert ) {
 	testAppend( manipulationFunctionReturningObj, assert );
 } );
 
-QUnit.test( "append(param) to object, see #11280", function( assert ) {
+QUnit.test( "append(param) to object, see trac-11280", function( assert ) {
 
 	assert.expect( 5 );
 
@@ -354,7 +357,7 @@ QUnit.test( "append(Function) returns String", function( assert ) {
 QUnit.test( "append(Function) returns Element", function( assert ) {
 
 	assert.expect( 2 );
-	var expected = "This link has class=\"blog\": Simon Willison's WeblogTry them out:",
+	var expected = "This link has class=\"blog\": Timmy Willison's WeblogTry them out:",
 		old = jQuery( "#sap" ).html();
 
 	jQuery( "#sap" ).append( function( i, val ) {
@@ -367,7 +370,7 @@ QUnit.test( "append(Function) returns Element", function( assert ) {
 QUnit.test( "append(Function) returns Array<Element>", function( assert ) {
 
 	assert.expect( 2 );
-	var expected = "This link has class=\"blog\": Simon Willison's WeblogTry them out:Yahoo",
+	var expected = "This link has class=\"blog\": Timmy Willison's WeblogTry them out:Yahoo",
 		old = jQuery( "#sap" ).html();
 
 	jQuery( "#sap" ).append( function( i, val ) {
@@ -380,7 +383,7 @@ QUnit.test( "append(Function) returns Array<Element>", function( assert ) {
 QUnit.test( "append(Function) returns jQuery", function( assert ) {
 
 	assert.expect( 2 );
-	var expected = "This link has class=\"blog\": Simon Willison's WeblogYahooTry them out:",
+	var expected = "This link has class=\"blog\": Timmy Willison's WeblogYahooTry them out:",
 		old = jQuery( "#sap" ).html();
 
 	jQuery( "#sap" ).append( function( i, val ) {
@@ -402,7 +405,7 @@ QUnit.test( "append(Function) returns Number", function( assert ) {
 	assert.ok( jQuery( "#sap" )[ 0 ].innerHTML.match( /5$/ ), "Check for appending a number" );
 } );
 
-QUnit.test( "XML DOM manipulation (#9960)", function( assert ) {
+QUnit.test( "XML DOM manipulation (trac-9960)", function( assert ) {
 
 	assert.expect( 5 );
 
@@ -430,7 +433,7 @@ QUnit.test( "XML DOM manipulation (#9960)", function( assert ) {
 	assert.deepEqual( jQuery( "state", xml2 ).get(), scxml1.find( "state" ).get(), "replaceWith" );
 } );
 
-QUnit.test( "append HTML5 sectioning elements (Bug #6485)", function( assert ) {
+QUnit.test( "append HTML5 sectioning elements (Bug trac-6485)", function( assert ) {
 
 	assert.expect( 2 );
 
@@ -445,7 +448,7 @@ QUnit.test( "append HTML5 sectioning elements (Bug #6485)", function( assert ) {
 	assert.equal( aside.length, 1, "HTML5 elements do not collapse their children" );
 } );
 
-QUnit[ jQuery.fn.css ? "test" : "skip" ]( "HTML5 Elements inherit styles from style rules (Bug #10501)", function( assert ) {
+QUnit[ includesModule( "css" ) ? "test" : "skip" ]( "HTML5 Elements inherit styles from style rules (Bug trac-10501)", function( assert ) {
 
 	assert.expect( 1 );
 
@@ -456,7 +459,7 @@ QUnit[ jQuery.fn.css ? "test" : "skip" ]( "HTML5 Elements inherit styles from st
 	assert.notEqual( jQuery( "section" ).css( "background-color" ), "transparent", "HTML5 elements inherit styles" );
 } );
 
-QUnit.test( "html(String) with HTML5 (Bug #6485)", function( assert ) {
+QUnit.test( "html(String) with HTML5 (Bug trac-6485)", function( assert ) {
 
 	assert.expect( 2 );
 
@@ -465,7 +468,7 @@ QUnit.test( "html(String) with HTML5 (Bug #6485)", function( assert ) {
 	assert.equal( jQuery( "#qunit-fixture" ).children().children().children().length, 1, "Make sure nested HTML5 elements can hold children." );
 } );
 
-QUnit.test( "html(String) tag-hyphenated elements (Bug #1987)", function( assert ) {
+QUnit.test( "html(String) tag-hyphenated elements (Bug gh-1987)", function( assert ) {
 
 	assert.expect( 27 );
 
@@ -561,7 +564,7 @@ QUnit.test( "IE8 serialization bug", function( assert ) {
 	assert.equal( wrapper.children( "link" ).length, 1, "Link elements are insertable with .html()" );
 } );
 
-QUnit.test( "html() object element #10324", function( assert ) {
+QUnit.test( "html() object element trac-10324", function( assert ) {
 
 	assert.expect( 1 );
 
@@ -613,11 +616,11 @@ QUnit.test( "appendTo(Element|Array<Element>)", function( assert ) {
 
 	assert.expect( 2 );
 
-	var expected = "This link has class=\"blog\": Simon Willison's WeblogTry them out:";
+	var expected = "This link has class=\"blog\": Timmy Willison's WeblogTry them out:";
 	jQuery( document.getElementById( "first" ) ).appendTo( "#sap" );
 	assert.equal( jQuery( "#sap" ).text(), expected, "Check for appending of element" );
 
-	expected = "This link has class=\"blog\": Simon Willison's WeblogTry them out:Yahoo";
+	expected = "This link has class=\"blog\": Timmy Willison's WeblogTry them out:Yahoo";
 	jQuery( [ document.getElementById( "first" ), document.getElementById( "yahoo" ) ] ).appendTo( "#sap" );
 	assert.equal( jQuery( "#sap" ).text(), expected, "Check for appending of array of elements" );
 
@@ -630,7 +633,7 @@ QUnit.test( "appendTo(jQuery)", function( assert ) {
 	var expected, num, div;
 	assert.ok( jQuery( document.createElement( "script" ) ).appendTo( "body" ).length, "Make sure a disconnected script can be appended." );
 
-	expected = "This link has class=\"blog\": Simon Willison's WeblogYahooTry them out:";
+	expected = "This link has class=\"blog\": Timmy Willison's WeblogYahooTry them out:";
 	jQuery( "#yahoo, #first" ).appendTo( "#sap" );
 	assert.equal( jQuery( "#sap" ).text(), expected, "Check for appending of jQuery object" );
 
@@ -683,7 +686,7 @@ QUnit.test( "prepend(Element)", function( assert ) {
 	assert.expect( 1 );
 
 	var expected;
-	expected = "Try them out:This link has class=\"blog\": Simon Willison's Weblog";
+	expected = "Try them out:This link has class=\"blog\": Timmy Willison's Weblog";
 	jQuery( "#sap" ).prepend( document.getElementById( "first" ) );
 	assert.equal( jQuery( "#sap" ).text(), expected, "Check for prepending of element" );
 } );
@@ -693,7 +696,7 @@ QUnit.test( "prepend(Array<Element>)", function( assert ) {
 	assert.expect( 1 );
 
 	var expected;
-	expected = "Try them out:YahooThis link has class=\"blog\": Simon Willison's Weblog";
+	expected = "Try them out:YahooThis link has class=\"blog\": Timmy Willison's Weblog";
 	jQuery( "#sap" ).prepend( [ document.getElementById( "first" ), document.getElementById( "yahoo" ) ] );
 	assert.equal( jQuery( "#sap" ).text(), expected, "Check for prepending of array of elements" );
 } );
@@ -703,7 +706,7 @@ QUnit.test( "prepend(jQuery)", function( assert ) {
 	assert.expect( 1 );
 
 	var expected;
-	expected = "YahooTry them out:This link has class=\"blog\": Simon Willison's Weblog";
+	expected = "YahooTry them out:This link has class=\"blog\": Timmy Willison's Weblog";
 	jQuery( "#sap" ).prepend( jQuery( "#yahoo, #first" ) );
 	assert.equal( jQuery( "#sap" ).text(), expected, "Check for prepending of jQuery object" );
 } );
@@ -713,7 +716,7 @@ QUnit.test( "prepend(Array<jQuery>)", function( assert ) {
 	assert.expect( 1 );
 
 	var expected;
-	expected = "Try them out:GoogleYahooThis link has class=\"blog\": Simon Willison's Weblog";
+	expected = "Try them out:GoogleYahooThis link has class=\"blog\": Timmy Willison's Weblog";
 	jQuery( "#sap" ).prepend( [ jQuery( "#first" ), jQuery( "#yahoo, #google" ) ] );
 	assert.equal( jQuery( "#sap" ).text(), expected, "Check for prepending of array of jQuery objects" );
 } );
@@ -746,7 +749,7 @@ QUnit.test( "prepend(Function) with incoming value -- Element", function( assert
 	assert.expect( 2 );
 
 	var old, expected;
-	expected = "Try them out:This link has class=\"blog\": Simon Willison's Weblog";
+	expected = "Try them out:This link has class=\"blog\": Timmy Willison's Weblog";
 	old = jQuery( "#sap" ).html();
 
 	jQuery( "#sap" ).prepend( function( i, val ) {
@@ -762,7 +765,7 @@ QUnit.test( "prepend(Function) with incoming value -- Array<Element>", function(
 	assert.expect( 2 );
 
 	var old, expected;
-	expected = "Try them out:YahooThis link has class=\"blog\": Simon Willison's Weblog";
+	expected = "Try them out:YahooThis link has class=\"blog\": Timmy Willison's Weblog";
 	old = jQuery( "#sap" ).html();
 
 	jQuery( "#sap" ).prepend( function( i, val ) {
@@ -778,7 +781,7 @@ QUnit.test( "prepend(Function) with incoming value -- jQuery", function( assert 
 	assert.expect( 2 );
 
 	var old, expected;
-	expected = "YahooTry them out:This link has class=\"blog\": Simon Willison's Weblog";
+	expected = "YahooTry them out:This link has class=\"blog\": Timmy Willison's Weblog";
 	old = jQuery( "#sap" ).html();
 
 	jQuery( "#sap" ).prepend( function( i, val ) {
@@ -808,7 +811,7 @@ QUnit.test( "prependTo(Element)", function( assert ) {
 
 	var expected;
 
-	expected = "Try them out:This link has class=\"blog\": Simon Willison's Weblog";
+	expected = "Try them out:This link has class=\"blog\": Timmy Willison's Weblog";
 	jQuery( document.getElementById( "first" ) ).prependTo( "#sap" );
 	assert.equal( jQuery( "#sap" ).text(), expected, "Check for prepending of element" );
 } );
@@ -819,7 +822,7 @@ QUnit.test( "prependTo(Array<Element>)", function( assert ) {
 
 	var expected;
 
-	expected = "Try them out:YahooThis link has class=\"blog\": Simon Willison's Weblog";
+	expected = "Try them out:YahooThis link has class=\"blog\": Timmy Willison's Weblog";
 	jQuery( [ document.getElementById( "first" ), document.getElementById( "yahoo" ) ] ).prependTo( "#sap" );
 	assert.equal( jQuery( "#sap" ).text(), expected, "Check for prepending of array of elements" );
 } );
@@ -830,7 +833,7 @@ QUnit.test( "prependTo(jQuery)", function( assert ) {
 
 	var expected;
 
-	expected = "YahooTry them out:This link has class=\"blog\": Simon Willison's Weblog";
+	expected = "YahooTry them out:This link has class=\"blog\": Timmy Willison's Weblog";
 	jQuery( "#yahoo, #first" ).prependTo( "#sap" );
 	assert.equal( jQuery( "#sap" ).text(), expected, "Check for prepending of jQuery object" );
 } );
@@ -872,8 +875,8 @@ QUnit.test( "before(Array<Element>)", function( assert ) {
 	assert.expect( 1 );
 
 	var expected;
-	expected = "This is a normal link: Try them out:diveintomarkYahoo";
-	jQuery( "#yahoo" ).before( manipulationBareObj( [ document.getElementById( "first" ), document.getElementById( "mark" ) ] ) );
+	expected = "This is a normal link: Try them out:mozillaYahoo";
+	jQuery( "#yahoo" ).before( manipulationBareObj( [ document.getElementById( "first" ), document.getElementById( "mozilla" ) ] ) );
 	assert.equal( jQuery( "#en" ).text(), expected, "Insert array of elements before" );
 } );
 
@@ -882,8 +885,8 @@ QUnit.test( "before(jQuery)", function( assert ) {
 	assert.expect( 1 );
 
 	var expected;
-	expected = "This is a normal link: diveintomarkTry them out:Yahoo";
-	jQuery( "#yahoo" ).before( manipulationBareObj( jQuery( "#mark, #first" ) ) );
+	expected = "This is a normal link: mozillaTry them out:Yahoo";
+	jQuery( "#yahoo" ).before( manipulationBareObj( jQuery( "#mozilla, #first" ) ) );
 	assert.equal( jQuery( "#en" ).text(), expected, "Insert jQuery before" );
 } );
 
@@ -892,8 +895,8 @@ QUnit.test( "before(Array<jQuery>)", function( assert ) {
 	assert.expect( 1 );
 
 	var expected;
-	expected = "This is a normal link: Try them out:GooglediveintomarkYahoo";
-	jQuery( "#yahoo" ).before( manipulationBareObj( [ jQuery( "#first" ), jQuery( "#mark, #google" ) ] ) );
+	expected = "This is a normal link: Try them out:GooglemozillaYahoo";
+	jQuery( "#yahoo" ).before( manipulationBareObj( [ jQuery( "#first" ), jQuery( "#mozilla, #google" ) ] ) );
 	assert.equal( jQuery( "#en" ).text(), expected, "Insert array of jQuery objects before" );
 } );
 
@@ -924,8 +927,8 @@ QUnit.test( "before(Function) -- Returns Array<Element>", function( assert ) {
 	assert.expect( 1 );
 
 	var expected;
-	expected = "This is a normal link: Try them out:diveintomarkYahoo";
-	jQuery( "#yahoo" ).before( manipulationFunctionReturningObj( [ document.getElementById( "first" ), document.getElementById( "mark" ) ] ) );
+	expected = "This is a normal link: Try them out:mozillaYahoo";
+	jQuery( "#yahoo" ).before( manipulationFunctionReturningObj( [ document.getElementById( "first" ), document.getElementById( "mozilla" ) ] ) );
 	assert.equal( jQuery( "#en" ).text(), expected, "Insert array of elements before" );
 } );
 
@@ -934,8 +937,8 @@ QUnit.test( "before(Function) -- Returns jQuery", function( assert ) {
 	assert.expect( 1 );
 
 	var expected;
-	expected = "This is a normal link: diveintomarkTry them out:Yahoo";
-	jQuery( "#yahoo" ).before( manipulationFunctionReturningObj( jQuery( "#mark, #first" ) ) );
+	expected = "This is a normal link: mozillaTry them out:Yahoo";
+	jQuery( "#yahoo" ).before( manipulationFunctionReturningObj( jQuery( "#mozilla, #first" ) ) );
 	assert.equal( jQuery( "#en" ).text(), expected, "Insert jQuery before" );
 } );
 
@@ -944,8 +947,8 @@ QUnit.test( "before(Function) -- Returns Array<jQuery>", function( assert ) {
 	assert.expect( 1 );
 
 	var expected;
-	expected = "This is a normal link: Try them out:GooglediveintomarkYahoo";
-	jQuery( "#yahoo" ).before( manipulationFunctionReturningObj( [ jQuery( "#first" ), jQuery( "#mark, #google" ) ] ) );
+	expected = "This is a normal link: Try them out:GooglemozillaYahoo";
+	jQuery( "#yahoo" ).before( manipulationFunctionReturningObj( [ jQuery( "#first" ), jQuery( "#mozilla, #google" ) ] ) );
 	assert.equal( jQuery( "#en" ).text(), expected, "Insert array of jQuery objects before" );
 } );
 
@@ -959,7 +962,7 @@ QUnit.test( "before(no-op)", function( assert ) {
 	assert.equal( set.length, 1, "Insert the element before the disconnected node. should be a no-op" );
 } );
 
-QUnit.test( "before and after w/ empty object (#10812)", function( assert ) {
+QUnit.test( "before and after w/ empty object (trac-10812)", function( assert ) {
 
 	assert.expect( 1 );
 
@@ -1039,8 +1042,8 @@ QUnit.test( "insertBefore(Array<Element>)", function( assert ) {
 
 	assert.expect( 1 );
 
-	var expected = "This is a normal link: Try them out:diveintomarkYahoo";
-	jQuery( [ document.getElementById( "first" ), document.getElementById( "mark" ) ] ).insertBefore( "#yahoo" );
+	var expected = "This is a normal link: Try them out:mozillaYahoo";
+	jQuery( [ document.getElementById( "first" ), document.getElementById( "mozilla" ) ] ).insertBefore( "#yahoo" );
 	assert.equal( jQuery( "#en" ).text(), expected, "Insert array of elements before" );
 } );
 
@@ -1048,8 +1051,8 @@ QUnit.test( "insertBefore(jQuery)", function( assert ) {
 
 	assert.expect( 1 );
 
-	var expected = "This is a normal link: diveintomarkTry them out:Yahoo";
-	jQuery( "#mark, #first" ).insertBefore( "#yahoo" );
+	var expected = "This is a normal link: mozillaTry them out:Yahoo";
+	jQuery( "#mozilla, #first" ).insertBefore( "#yahoo" );
 	assert.equal( jQuery( "#en" ).text(), expected, "Insert jQuery before" );
 } );
 
@@ -1075,8 +1078,8 @@ QUnit.test( ".after(Array<Element>)", function( assert ) {
 
 	assert.expect( 1 );
 
-	var expected = "This is a normal link: YahooTry them out:diveintomark";
-	jQuery( "#yahoo" ).after( [ document.getElementById( "first" ), document.getElementById( "mark" ) ] );
+	var expected = "This is a normal link: YahooTry them out:mozilla";
+	jQuery( "#yahoo" ).after( [ document.getElementById( "first" ), document.getElementById( "mozilla" ) ] );
 	assert.equal( jQuery( "#en" ).text(), expected, "Insert array of elements after" );
 } );
 
@@ -1084,8 +1087,8 @@ QUnit.test( ".after(jQuery)", function( assert ) {
 
 	assert.expect( 1 );
 
-	var expected = "This is a normal link: YahooTry them out:Googlediveintomark";
-	jQuery( "#yahoo" ).after( [ jQuery( "#first" ), jQuery( "#mark, #google" ) ] );
+	var expected = "This is a normal link: YahooTry them out:Googlemozilla";
+	jQuery( "#yahoo" ).after( [ jQuery( "#first" ), jQuery( "#mozilla, #google" ) ] );
 	assert.equal( jQuery( "#en" ).text(), expected, "Insert array of jQuery objects after" );
 } );
 
@@ -1113,9 +1116,9 @@ QUnit.test( ".after(Function) returns Array<Element>", function( assert ) {
 
 	assert.expect( 1 );
 
-	var expected = "This is a normal link: YahooTry them out:diveintomark",
+	var expected = "This is a normal link: YahooTry them out:mozilla",
 		val = manipulationFunctionReturningObj;
-	jQuery( "#yahoo" ).after( val( [ document.getElementById( "first" ), document.getElementById( "mark" ) ] ) );
+	jQuery( "#yahoo" ).after( val( [ document.getElementById( "first" ), document.getElementById( "mozilla" ) ] ) );
 	assert.equal( jQuery( "#en" ).text(), expected, "Insert array of elements after" );
 } );
 
@@ -1123,9 +1126,9 @@ QUnit.test( ".after(Function) returns jQuery", function( assert ) {
 
 	assert.expect( 1 );
 
-	var expected = "This is a normal link: YahooTry them out:Googlediveintomark",
+	var expected = "This is a normal link: YahooTry them out:Googlemozilla",
 		val = manipulationFunctionReturningObj;
-	jQuery( "#yahoo" ).after( val( [ jQuery( "#first" ), jQuery( "#mark, #google" ) ] ) );
+	jQuery( "#yahoo" ).after( val( [ jQuery( "#first" ), jQuery( "#mozilla, #google" ) ] ) );
 	assert.equal( jQuery( "#en" ).text(), expected, "Insert array of jQuery objects after" );
 } );
 
@@ -1160,8 +1163,8 @@ QUnit.test( "insertAfter(Array<Element>)", function( assert ) {
 
 	assert.expect( 1 );
 
-	var expected = "This is a normal link: YahooTry them out:diveintomark";
-	jQuery( [ document.getElementById( "first" ), document.getElementById( "mark" ) ] ).insertAfter( "#yahoo" );
+	var expected = "This is a normal link: YahooTry them out:mozilla";
+	jQuery( [ document.getElementById( "first" ), document.getElementById( "mozilla" ) ] ).insertAfter( "#yahoo" );
 	assert.equal( jQuery( "#en" ).text(), expected, "Insert array of elements after" );
 } );
 
@@ -1169,8 +1172,8 @@ QUnit.test( "insertAfter(jQuery)", function( assert ) {
 
 	assert.expect( 1 );
 
-	var expected = "This is a normal link: YahoodiveintomarkTry them out:";
-	jQuery( "#mark, #first" ).insertAfter( "#yahoo" );
+	var expected = "This is a normal link: YahoomozillaTry them out:";
+	jQuery( "#mozilla, #first" ).insertAfter( "#yahoo" );
 	assert.equal( jQuery( "#en" ).text(), expected, "Insert jQuery after" );
 } );
 
@@ -1195,21 +1198,21 @@ function testReplaceWith( val, assert ) {
 	assert.ok( !jQuery( "#baz" )[ 0 ], "Verify that original element is gone, after element" );
 
 	jQuery( "#bar" ).replaceWith( "<div id='yahoo'></div>", "...", "<div id='baz'></div>" );
-	assert.deepEqual( jQuery( "#yahoo, #baz" ).get(), q( "yahoo", "baz" ),  "Replace element with multiple arguments (#13722)" );
+	assert.deepEqual( jQuery( "#yahoo, #baz" ).get(), q( "yahoo", "baz" ),  "Replace element with multiple arguments (trac-13722)" );
 	assert.strictEqual( jQuery( "#yahoo" )[ 0 ].nextSibling, jQuery( "#baz" )[ 0 ].previousSibling, "Argument order preserved" );
 	assert.deepEqual( jQuery( "#bar" ).get(), [], "Verify that original element is gone, after multiple arguments" );
 
-	jQuery( "#google" ).replaceWith( val( [ document.getElementById( "first" ), document.getElementById( "mark" ) ] ) );
-	assert.deepEqual( jQuery( "#mark, #first" ).get(), q( "first", "mark" ),  "Replace element with array of elements" );
+	jQuery( "#google" ).replaceWith( val( [ document.getElementById( "first" ), document.getElementById( "mozilla" ) ] ) );
+	assert.deepEqual( jQuery( "#mozilla, #first" ).get(), q( "first", "mozilla" ),  "Replace element with array of elements" );
 	assert.ok( !jQuery( "#google" )[ 0 ], "Verify that original element is gone, after array of elements" );
 
-	jQuery( "#groups" ).replaceWith( val( jQuery( "#mark, #first" ) ) );
-	assert.deepEqual( jQuery( "#mark, #first" ).get(), q( "first", "mark" ),  "Replace element with jQuery collection" );
+	jQuery( "#groups" ).replaceWith( val( jQuery( "#mozilla, #first" ) ) );
+	assert.deepEqual( jQuery( "#mozilla, #first" ).get(), q( "first", "mozilla" ),  "Replace element with jQuery collection" );
 	assert.ok( !jQuery( "#groups" )[ 0 ], "Verify that original element is gone, after jQuery collection" );
 
-	jQuery( "#mark, #first" ).replaceWith( val( "<span class='replacement'></span><span class='replacement'></span>" ) );
-	assert.equal( jQuery( "#qunit-fixture .replacement" ).length, 4, "Replace multiple elements (#12449)" );
-	assert.deepEqual( jQuery( "#mark, #first" ).get(), [], "Verify that original elements are gone, after replace multiple" );
+	jQuery( "#mozilla, #first" ).replaceWith( val( "<span class='replacement'></span><span class='replacement'></span>" ) );
+	assert.equal( jQuery( "#qunit-fixture .replacement" ).length, 4, "Replace multiple elements (trac-12449)" );
+	assert.deepEqual( jQuery( "#mozilla, #first" ).get(), [], "Verify that original elements are gone, after replace multiple" );
 
 	tmp = jQuery( "<b>content</b>" )[ 0 ];
 	jQuery( "#anchor1" ).contents().replaceWith( val( tmp ) );
@@ -1256,7 +1259,7 @@ function testReplaceWith( val, assert ) {
 		"Self-replacement" );
 	$div.replaceWith( child );
 	assert.deepEqual( jQuery( "#qunit-fixture" ).children().first().get(), child.get(),
-		"Replacement with following sibling (#13810)" );
+		"Replacement with following sibling (trac-13810)" );
 	assert.deepEqual( jQuery( ".pathological", "#qunit-fixture" ).get(), [],
 		"Replacement with following sibling (context removed)" );
 
@@ -1322,9 +1325,13 @@ QUnit.test( "Empty replaceWith (trac-13401; trac-13596; gh-2204)", function( ass
 	jQuery.each( tests, function( label, input ) {
 		$el.html( "<a></a>" ).children().replaceWith( input );
 		assert.strictEqual( $el.html(), "", "replaceWith(" + label + ")" );
-		$el.html( "<b></b>" ).children().replaceWith( function() { return input; } );
+		$el.html( "<b></b>" ).children().replaceWith( function() {
+			return input;
+		} );
 		assert.strictEqual( $el.html(), "", "replaceWith(function returning " + label + ")" );
-		$el.html( "<i></i>" ).children().replaceWith( function( i ) { return input; } );
+		$el.html( "<i></i>" ).children().replaceWith( function() {
+			return input;
+		} );
 		assert.strictEqual( $el.html(), "", "replaceWith(other function returning " + label + ")" );
 		$el.html( "<p></p>" ).children().replaceWith( function( i ) {
 			return i ?
@@ -1360,9 +1367,9 @@ QUnit.test( "replaceAll(Array<Element>)", function( assert ) {
 
 	assert.expect( 3 );
 
-	jQuery( [ document.getElementById( "first" ), document.getElementById( "mark" ) ] ).replaceAll( "#yahoo" );
+	jQuery( [ document.getElementById( "first" ), document.getElementById( "mozilla" ) ] ).replaceAll( "#yahoo" );
 	assert.ok( jQuery( "#first" )[ 0 ], "Replace element with array of elements" );
-	assert.ok( jQuery( "#mark" )[ 0 ], "Replace element with array of elements" );
+	assert.ok( jQuery( "#mozilla" )[ 0 ], "Replace element with array of elements" );
 	assert.ok( !jQuery( "#yahoo" )[ 0 ], "Verify that original element is gone, after array of elements" );
 } );
 
@@ -1370,13 +1377,13 @@ QUnit.test( "replaceAll(jQuery)", function( assert ) {
 
 	assert.expect( 3 );
 
-	jQuery( "#mark, #first" ).replaceAll( "#yahoo" );
+	jQuery( "#mozilla, #first" ).replaceAll( "#yahoo" );
 	assert.ok( jQuery( "#first" )[ 0 ], "Replace element with set of elements" );
-	assert.ok( jQuery( "#mark" )[ 0 ], "Replace element with set of elements" );
+	assert.ok( jQuery( "#mozilla" )[ 0 ], "Replace element with set of elements" );
 	assert.ok( !jQuery( "#yahoo" )[ 0 ], "Verify that original element is gone, after set of elements" );
 } );
 
-QUnit.test( "jQuery.clone() (#8017)", function( assert ) {
+QUnit.test( "jQuery.clone() (trac-8017)", function( assert ) {
 
 	assert.expect( 2 );
 
@@ -1388,7 +1395,7 @@ QUnit.test( "jQuery.clone() (#8017)", function( assert ) {
 	assert.equal( main.childNodes.length, clone.childNodes.length, "Simple child length to ensure a large dom tree copies correctly" );
 } );
 
-QUnit.test( "append to multiple elements (#8070)", function( assert ) {
+QUnit.test( "append to multiple elements (trac-8070)", function( assert ) {
 
 	assert.expect( 2 );
 
@@ -1543,7 +1550,7 @@ QUnit.test( "clone()", function( assert ) {
 	body.remove();
 } );
 
-QUnit.test( "clone(script type=non-javascript) (#11359)", function( assert ) {
+QUnit.test( "clone(script type=non-javascript) (trac-11359)", function( assert ) {
 
 	assert.expect( 3 );
 
@@ -1556,7 +1563,7 @@ QUnit.test( "clone(script type=non-javascript) (#11359)", function( assert ) {
 	dest.remove();
 } );
 
-QUnit.test( "clone(form element) (Bug #3879, #6655)", function( assert ) {
+QUnit.test( "clone(form element) (Bug trac-3879, trac-6655)", function( assert ) {
 
 	assert.expect( 5 );
 
@@ -1564,7 +1571,9 @@ QUnit.test( "clone(form element) (Bug #3879, #6655)", function( assert ) {
 
 	element = jQuery( "<select><option>Foo</option><option value='selected' selected>Bar</option></select>" );
 
-	assert.equal( element.clone().find( "option" ).filter( function() { return this.selected; } ).val(), "selected", "Selected option cloned correctly" );
+	assert.equal( element.clone().find( "option" ).filter( function() {
+		return this.selected;
+	} ).val(), "selected", "Selected option cloned correctly" );
 
 	element = jQuery( "<input type='checkbox' value='foo'>" ).attr( "checked", "checked" );
 	clone = element.clone();
@@ -1581,7 +1590,7 @@ QUnit.test( "clone(form element) (Bug #3879, #6655)", function( assert ) {
 	assert.equal( clone[ 0 ].defaultValue, "foo", "Textarea defaultValue cloned correctly" );
 } );
 
-QUnit.test( "clone(multiple selected options) (Bug #8129)", function( assert ) {
+QUnit.test( "clone(multiple selected options) (Bug trac-8129)", function( assert ) {
 
 	assert.expect( 1 );
 
@@ -1630,14 +1639,14 @@ QUnit.test( "html(undefined)", function( assert ) {
 
 	assert.expect( 1 );
 
-	assert.equal( jQuery( "#foo" ).html( "<i>test</i>" ).html( undefined ).html().toLowerCase(), "<i>test</i>", ".html(undefined) is chainable (#5571)" );
+	assert.equal( jQuery( "#foo" ).html( "<i>test</i>" ).html( undefined ).html().toLowerCase(), "<i>test</i>", ".html(undefined) is chainable (trac-5571)" );
 } );
 
 QUnit.test( "html() on empty set", function( assert ) {
 
 	assert.expect( 1 );
 
-	assert.strictEqual( jQuery().html(), undefined, ".html() returns undefined for empty sets (#11962)" );
+	assert.strictEqual( jQuery().html(), undefined, ".html() returns undefined for empty sets (trac-11962)" );
 } );
 
 function childNodeNames( node ) {
@@ -1738,7 +1747,7 @@ function testHtml( valueObj, assert ) {
 	fixture.html( valueObj( "<script type='text/javascript'>QUnit.assert.ok( true, 'Injection of identical script' );</script>" ) );
 	fixture.html( valueObj( "<script type='text/javascript'>QUnit.assert.ok( true, 'Injection of identical script' );</script>" ) );
 	fixture.html( valueObj( "<script type='text/javascript'>QUnit.assert.ok( true, 'Injection of identical script' );</script>" ) );
-	fixture.html( valueObj( "foo <form><script type='text/javascript'>QUnit.assert.ok( true, 'Injection of identical script (#975)' );</script></form>" ) );
+	fixture.html( valueObj( "foo <form><script type='text/javascript'>QUnit.assert.ok( true, 'Injection of identical script (trac-975)' );</script></form>" ) );
 
 	jQuery.scriptorder = 0;
 	fixture.html( valueObj( [
@@ -1808,6 +1817,35 @@ QUnit.test( "html(script nomodule)", function( assert ) {
 	setTimeout( function() {
 		done();
 	}, 1000 );
+} );
+
+QUnit.test( "html(self-removing script) (gh-5377)", function( assert ) {
+	assert.expect( 2 );
+
+	var $fixture = jQuery( "#qunit-fixture" );
+
+	$fixture.html(
+		[
+			"<script id='gh5377-1'>",
+				"(function removeScript() {",
+					"var id = 'gh5377-1';",
+					"var script = document.currentScript || document.getElementById(id);",
+					"script.parentNode.removeChild( script );",
+					"QUnit.assert.ok( true, 'removed document.currentScript' );",
+				"})();",
+			"</script>",
+			"<div>",
+				"<script id='gh5377-2'>",
+					"(function removeInnerScript() {",
+						"var id = 'gh5377-2';",
+						"var innerScript = document.currentScript || document.getElementById(id);",
+						"innerScript.parentNode.removeChild( innerScript );",
+						"QUnit.assert.ok( true, 'removed inner document.currentScript' );",
+					"})();",
+				"</script>",
+			"</div>"
+		].join( "\n" )
+	);
 } );
 
 QUnit.test( "html(Function) with incoming value -- direct selection", function( assert ) {
@@ -1888,7 +1926,7 @@ QUnit.test( "html(Function) with incoming value -- jQuery.contents()", function(
 	} ).html().replace( />/g, "&gt;" ), " " + insert, "Verify escaped insertion." );
 } );
 
-QUnit.test( "clone()/html() don't expose jQuery/Sizzle expandos (#12858)", function( assert ) {
+QUnit.test( "clone()/html() don't expose jQuery/Sizzle expandos (trac-12858)", function( assert ) {
 
 	assert.expect( 2 );
 
@@ -1975,7 +2013,7 @@ QUnit.test( "remove() event cleaning ", function( assert ) {
 	cleanUp.remove();
 } );
 
-QUnit.test( "remove() in document order #13779", function( assert ) {
+QUnit.test( "remove() in document order trac-13779", function( assert ) {
 	assert.expect( 1 );
 
 	var last,
@@ -2214,8 +2252,7 @@ QUnit.test( "domManip plain-text caching (trac-6779)", function( assert ) {
 	for ( i = 0; i < bad.length; i++ ) {
 		try {
 			$f.append( bad[ i ] );
-		}
-		catch ( e ) {}
+		} catch ( e ) {}
 	}
 	assert.equal( $f.text(), bad.join( "" ), "Cached strings that match Object properties" );
 	$f.remove();
@@ -2300,7 +2337,7 @@ testIframe(
 	},
 
 	// The AJAX module is needed for jQuery._evalUrl.
-	QUnit[ jQuery.ajax ? "test" : "skip" ]
+	QUnit[ includesModule( "ajax" ) ? "test" : "skip" ]
 );
 
 
@@ -2309,7 +2346,7 @@ testIframe(
 // Skip the the test if we are not in localhost but make sure we run
 // it in Karma.
 QUnit[
-	jQuery.ajax && ( window.__karma__ || location.hostname === "localhost" ) ?
+	includesModule( "ajax" ) && location.hostname === "localhost" ?
 		"test" :
 		"skip"
 ]( "jQuery.append with crossorigin attribute", function( assert ) {
@@ -2336,7 +2373,7 @@ QUnit[
 	}, 2000 );
 } );
 
-QUnit.test( "jQuery.clone - no exceptions for object elements #9587", function( assert ) {
+QUnit.test( "jQuery.clone - no exceptions for object elements trac-9587", function( assert ) {
 
 	assert.expect( 1 );
 
@@ -2348,7 +2385,7 @@ QUnit.test( "jQuery.clone - no exceptions for object elements #9587", function( 
 	}
 } );
 
-QUnit.test( "Cloned, detached HTML5 elems (#10667,10670)", function( assert ) {
+QUnit.test( "Cloned, detached HTML5 elems (trac-10667, trac-10670)", function( assert ) {
 
 	assert.expect( 7 );
 
@@ -2428,7 +2465,7 @@ QUnit.test( "Guard against exceptions when clearing safeChildNodes", function( a
 	assert.ok( div && div.jquery, "Created nodes safely, guarded against exceptions on safeChildNodes[ -1 ]" );
 } );
 
-QUnit.test( "Ensure oldIE creates a new set on appendTo (#8894)", function( assert ) {
+QUnit.test( "Ensure oldIE creates a new set on appendTo (trac-8894)", function( assert ) {
 
 	assert.expect( 5 );
 
@@ -2439,7 +2476,7 @@ QUnit.test( "Ensure oldIE creates a new set on appendTo (#8894)", function( asse
 	assert.strictEqual( jQuery( "<p></p>" ).appendTo( "<div></div>" ).end().length, jQuery( "<p>test</p>" ).appendTo( "<div></div>" ).end().length, "Elements created with createElement and with createDocumentFragment should be treated alike" );
 } );
 
-QUnit.test( "html() - script exceptions bubble (#11743)", function( assert ) {
+QUnit.test( "html() - script exceptions bubble (trac-11743)", function( assert ) {
 	assert.expect( 2 );
 	var done = assert.async(),
 		onerror = window.onerror;
@@ -2453,7 +2490,7 @@ QUnit.test( "html() - script exceptions bubble (#11743)", function( assert ) {
 	window.onerror = function() {
 		assert.ok( true, "Exception thrown" );
 
-		if ( jQuery.ajax ) {
+		if ( includesModule( "ajax" ) ) {
 			window.onerror = function() {
 				assert.ok( true, "Exception thrown in remote script" );
 			};
@@ -2481,7 +2518,7 @@ QUnit.test( "checked state is cloned with clone()", function( assert ) {
 	assert.equal( jQuery( elem ).clone().attr( "id", "clone" )[ 0 ].checked, true, "Checked true state correctly cloned" );
 } );
 
-QUnit.test( "manipulate mixed jQuery and text (#12384, #12346)", function( assert ) {
+QUnit.test( "manipulate mixed jQuery and text (trac-12384, trac-12346)", function( assert ) {
 
 	assert.expect( 2 );
 
@@ -2497,7 +2534,7 @@ QUnit.test( "manipulate mixed jQuery and text (#12384, #12346)", function( asser
 	assert.equal( div.find( "*" ).length, 3, "added 2 paragraphs after inner div" );
 } );
 
-QUnit.test( "script evaluation (#11795)", function( assert ) {
+QUnit.test( "script evaluation (trac-11795)", function( assert ) {
 
 	assert.expect( 13 );
 
@@ -2541,7 +2578,7 @@ QUnit.test( "script evaluation (#11795)", function( assert ) {
 	assert.deepEqual( fixture.children( "script" ).get(), scriptsOut.get(), "Scripts detached without reevaluation" );
 	objGlobal.ok = isOk;
 
-	if ( jQuery.ajax ) {
+	if ( includesModule( "ajax" ) ) {
 		Globals.register( "testBar" );
 		jQuery( "#qunit-fixture" ).append( "<script src='" + url( "mock.php?action=testbar" ) + "'></script>" );
 		assert.strictEqual( window.testBar, "bar", "Global script evaluation" );
@@ -2551,7 +2588,7 @@ QUnit.test( "script evaluation (#11795)", function( assert ) {
 	}
 } );
 
-QUnit[ jQuery.ajax ? "test" : "skip" ]( "jQuery._evalUrl (#12838)", function( assert ) {
+QUnit[ includesModule( "ajax" ) ? "test" : "skip" ]( "jQuery._evalUrl (trac-12838)", function( assert ) {
 
 	assert.expect( 5 );
 
@@ -2620,11 +2657,9 @@ QUnit.test( "jQuery.htmlPrefilter (gh-1747)", function( assert ) {
 	}, 100 );
 } );
 
-QUnit.test( "insertAfter, insertBefore, etc do not work when destination is original element. Element is removed (#4087)", function( assert ) {
+QUnit.test( "insertAfter, insertBefore, etc do not work when destination is original element. Element is removed (trac-4087)", function( assert ) {
 
 	assert.expect( 10 );
-
-	var elems;
 
 	jQuery.each( [
 		"appendTo",
@@ -2633,7 +2668,7 @@ QUnit.test( "insertAfter, insertBefore, etc do not work when destination is orig
 		"insertAfter",
 		"replaceAll"
 	], function( index, name ) {
-		elems = jQuery( [
+		jQuery( [
 			"<ul id='test4087-complex'><li class='test4087'><div>c1</div>h1</li><li><div>c2</div>h2</li></ul>",
 			"<div id='test4087-simple'><div class='test4087-1'>1<div class='test4087-2'>2</div><div class='test4087-3'>3</div></div></div>",
 			"<div id='test4087-multiple'><div class='test4087-multiple'>1</div><div class='test4087-multiple'>2</div></div>"
@@ -2654,7 +2689,7 @@ QUnit.test( "insertAfter, insertBefore, etc do not work when destination is orig
 	} );
 } );
 
-QUnit.test( "Index for function argument should be received (#13094)", function( assert ) {
+QUnit.test( "Index for function argument should be received (trac-13094)", function( assert ) {
 	assert.expect( 2 );
 
 	var i = 0;
@@ -2676,7 +2711,7 @@ QUnit.test( "Make sure jQuery.fn.remove can work on elements in documentFragment
 	assert.equal( fragment.childNodes.length, 0, "div element was removed from documentFragment" );
 } );
 
-QUnit.test( "Make sure specific elements with content created correctly (#13232)", function( assert ) {
+QUnit.test( "Make sure specific elements with content created correctly (trac-13232)", function( assert ) {
 	assert.expect( 20 );
 
 	var results = [],
@@ -2711,7 +2746,7 @@ QUnit.test( "Make sure specific elements with content created correctly (#13232)
 	} );
 } );
 
-QUnit.test( "Validate creation of multiple quantities of certain elements (#13818)", function( assert ) {
+QUnit.test( "Validate creation of multiple quantities of certain elements (trac-13818)", function( assert ) {
 	assert.expect( 22 );
 
 	var tags = [ "thead", "tbody", "tfoot", "colgroup", "col", "caption", "tr", "th", "td", "optgroup", "option" ];
@@ -2830,6 +2865,46 @@ QUnit.test( "Make sure tr is not appended to the wrong tbody (gh-3439)", functio
 	assert.strictEqual( htmlOut, htmlExpected );
 } );
 
+[ true, false ].forEach( function( adoptedCase ) {
+	QUnit.testUnlessIE(
+		"Manip within <template /> content moved back & forth doesn't throw - " + (
+			adoptedCase ? "explicitly adopted" : "not explicitly adopted"
+		) + " (gh-5147)",
+		function( assert ) {
+			assert.expect( 1 );
+
+			var fragment, diva, divb,
+				div = jQuery( "" +
+					"<div>\n" +
+					"	<div><div class='a'></div></div>\n" +
+					"	<div><div class='b'></div></div>\n" +
+					"</div>" +
+					"" ),
+				template = jQuery( "<template></template>" );
+
+			jQuery( "#qunit-fixture" )
+				.append( div )
+				.append( template );
+
+			fragment = template[ 0 ].content;
+			diva = div.find( ".a" );
+			divb = div.find( ".b" );
+
+			if ( adoptedCase ) {
+				document.adoptNode( fragment );
+			}
+
+			fragment.appendChild( div.children()[ 0 ] );
+			fragment.appendChild( div.children()[ 0 ] );
+
+			diva.insertBefore( divb );
+
+			assert.strictEqual( diva.siblings( ".b" ).length, 1,
+				"Insertion worked" );
+		}
+	);
+} );
+
 QUnit.test( "Make sure tags with single-character names are found (gh-4124)", function( assert ) {
 	assert.expect( 1 );
 
@@ -2846,7 +2921,7 @@ QUnit.test( "Make sure tags with single-character names are found (gh-4124)", fu
 } );
 
 // The AJAX module is needed for jQuery._evalUrl.
-QUnit[ jQuery.ajax ? "test" : "skip" ]( "Insert script with data-URI (gh-1887)", function( assert ) {
+QUnit[ includesModule( "ajax" ) ? "test" : "skip" ]( "Insert script with data-URI (gh-1887)", function( assert ) {
 	assert.expect( 1 );
 
 	Globals.register( "testFoo" );
@@ -2878,7 +2953,7 @@ QUnit.test( "Ignore content from unsuccessful responses (gh-4126)", function( as
 	assert.expect( 1 );
 
 	var globalEval = jQuery.globalEval;
-	jQuery.globalEval = function( code ) {
+	jQuery.globalEval = function( _code ) {
 		assert.ok( false, "no attempt to evaluate code from an unsuccessful response" );
 	};
 
@@ -2896,7 +2971,7 @@ QUnit.test( "Ignore content from unsuccessful responses (gh-4126)", function( as
 testIframe(
 	"Check if CSP nonce is preserved",
 	"mock.php?action=cspNonce",
-	function( assert, jQuery, window, document ) {
+	function( assert ) {
 		var done = assert.async();
 
 		assert.expect( 1 );
@@ -2911,7 +2986,7 @@ testIframe(
 testIframe(
 	"Check if CSP nonce is preserved for external scripts with src attribute",
 	"mock.php?action=cspNonce&test=external",
-	function( assert, jQuery, window, document ) {
+	function( assert ) {
 		var done = assert.async();
 
 		assert.expect( 1 );
@@ -2923,13 +2998,13 @@ testIframe(
 	},
 
 	// The AJAX module is needed for jQuery._evalUrl.
-	QUnit[ jQuery.ajax ? "test" : "skip" ]
+	QUnit[ includesModule( "ajax" ) ? "test" : "skip" ]
 );
 
 testIframe(
 	"jQuery.globalEval supports nonce",
 	"mock.php?action=cspNonce&test=globaleval",
-	function( assert, jQuery, window, document ) {
+	function( assert ) {
 		var done = assert.async();
 
 		assert.expect( 1 );
@@ -3008,3 +3083,59 @@ QUnit.test( "Works with invalid attempts to close the table wrapper", function( 
 	assert.strictEqual( elem[ 0 ].nodeName.toLowerCase(), "td", "First element is td" );
 	assert.strictEqual( elem[ 1 ].nodeName.toLowerCase(), "td", "Second element is td" );
 } );
+
+// Test trustedTypes support in browsers where they're supported (currently Chrome 83+).
+// Browsers with no TrustedHTML support still run tests on object wrappers with
+// a proper `toString` function.
+testIframe(
+	"Basic TrustedHTML support (gh-4409)",
+	"mock.php?action=trustedHtml",
+	function( assert, jQuery, window, document, test ) {
+
+		assert.expect( 5 );
+
+		test.forEach( function( result ) {
+			assert.deepEqual( result.actual, result.expected, result.message );
+		} );
+	}
+);
+
+QUnit.test( "should handle node removal in event's remove hook (gh-5214)", function( assert ) {
+
+	assert.expect( 4 );
+
+	jQuery(
+		"<div id='container'>" +
+		"	<div class='guarded removeself' data-elt='one'>" +
+		"		Guarded 1" +
+		"	</div>" +
+		"	<div class='guarded' data-elt='two'>" +
+		"		Guarded 2" +
+		"	</div>" +
+		"	<div class='guarded' data-elt='three'>" +
+		"		Guarded 3" +
+		"	</div>" +
+		"</div>"
+	).appendTo( "#qunit-fixture" );
+
+	// Define the custom event handler
+	jQuery.event.special.removeondestroy = {
+		remove: function( ) {
+			var $t = jQuery( this );
+			assert.step( $t.data( "elt" ) );
+			if ( $t.is( ".removeself" ) ) {
+				$t.remove();
+			}
+		}
+	};
+
+	// Attach an empty handler to trigger the `remove`
+	// logic for the custom event when the element is removed.
+	jQuery( ".guarded" ).on( "removeondestroy", function( ) { } );
+
+	// Trigger the event's removal logic by emptying the container
+	jQuery( "#container" ).empty();
+
+	assert.verifySteps( [ "one", "two", "three" ], "All elements were processed in order" );
+} );
+

@@ -3,22 +3,37 @@
 *~
 *.diff
 *.patch
-/*.html
 .DS_Store
 .bower.json
 .sizecache.json
 yarn.lock
-package-lock.json
+.eslintcache
+tmp
 
 npm-debug.log*
 
-# Ignore everything in dist folder except for eslint config
+# Ignore built files in `dist` folder
+# Leave the package.json and wrappers
 /dist/*
-!/dist/.eslintrc.json
+!/dist/package.json
+!/dist/wrappers
 
-/amd
+# Ignore built files in `dist-module` folder
+# Leave the package.json and wrappers
+/dist-module/*
+!/dist-module/package.json
+!/dist-module/wrappers
+
 /external
 /node_modules
 
 /test/data/core/jquery-iterability-transpiled.js
 /test/data/qunit-fixture.js
+
+# Release artifacts
+changelog.html
+contributors.html
+
+# Ignore BrowserStack testing files
+local.log
+browserstack.err

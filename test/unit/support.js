@@ -17,9 +17,9 @@ function getComputedSupport( support ) {
 	return result;
 }
 
-if ( jQuery.css ) {
+if ( includesModule( "css" ) ) {
 	testIframe(
-		"body background is not lost if set prior to loading jQuery (#9239)",
+		"body background is not lost if set prior to loading jQuery (trac-9239)",
 		"support/bodyBackground.html",
 		function( assert, jQuery, window, document, color, support ) {
 			assert.expect( 2 );
@@ -54,39 +54,97 @@ testIframe(
 	}
 );
 
+testIframe(
+	"Verify correctness of support tests with bootstrap CSS on the page",
+	"support/bootstrap.html",
+	function( assert, jQuery, window, document, bodyStyle, support ) {
+		assert.expect( 2 );
+		assert.strictEqual( bodyStyle.boxSizing, "border-box",
+			"border-box applied on body by Bootstrap" );
+		assert.deepEqual( jQuery.extend( {}, support ), computedSupport,
+			"Same support properties" );
+	}
+);
+
+testIframe(
+	"Verify correctness of support tests with CSS zoom on the root element",
+	"support/zoom.html",
+	function( assert, jQuery, window, document, htmlStyle, support ) {
+		assert.expect( 1 );
+		assert.deepEqual( jQuery.extend( {}, support ), computedSupport,
+			"Same support properties" );
+	}
+);
+
 ( function() {
-	var expected,
+	var expected, browserKey,
 		userAgent = window.navigator.userAgent,
 		expectedMap = {
 			ie_11: {
-				"reliableTrDimensions": false
+				cssHas: true,
+				reliableTrDimensions: false
+			},
+			chrome_111: {
+				cssHas: false,
+				reliableTrDimensions: true
 			},
 			chrome: {
-				"reliableTrDimensions": true
+				cssHas: true,
+				reliableTrDimensions: true
+			},
+			safari_16_3: {
+				cssHas: false,
+				reliableTrDimensions: true
 			},
 			safari: {
-				"reliableTrDimensions": true
+				cssHas: true,
+				reliableTrDimensions: true
 			},
 			firefox: {
-				"reliableTrDimensions": false
+				cssHas: true,
+				reliableTrDimensions: false
+			},
+			ios_14_15_3: {
+				cssHas: true,
+				reliableTrDimensions: true
+			},
+			ios_15_4_16_3: {
+				cssHas: false,
+				reliableTrDimensions: true
 			},
 			ios: {
-				"reliableTrDimensions": true
+				cssHas: true,
+				reliableTrDimensions: true
 			}
 		};
 
+	// Make the selector-native build pass tests.
+	for ( browserKey in expectedMap ) {
+		if ( !includesModule( "selector" ) ) {
+			delete expectedMap[ browserKey ].cssHas;
+		}
+	}
+
 	if ( document.documentMode ) {
 		expected = expectedMap.ie_11;
-	} else if ( /chrome/i.test( userAgent ) ) {
+	} else if ( /\b(?:headless)?chrome\/(?:10\d|11[01])\b/i.test( userAgent ) ) {
+		expected = expectedMap.chrome_111;
+	} else if ( /\b(?:headless)?chrome\//i.test( userAgent ) ) {
 
 		// Catches Edge, Chrome on Android & Opera as well.
 		expected = expectedMap.chrome;
-	} else if ( /\b\d+(\.\d+)+ safari/i.test( userAgent ) ) {
-		expected = expectedMap.safari;
-	} else if ( /firefox/i.test( userAgent ) ) {
+	} else if ( /\bfirefox\//i.test( userAgent ) ) {
 		expected = expectedMap.firefox;
-	} else if ( /(?:iphone|ipad);.*(?:iphone)? os \d+_/i.test( userAgent ) ) {
+	} else if ( /\biphone os (?:14_|15_[0123])/i.test( userAgent ) ) {
+		expected = expectedMap.ios_14_15_3;
+	} else if ( /\biphone os (?:15_|16_[0123])/i.test( userAgent ) ) {
+		expected = expectedMap.ios_15_4_16_3;
+	} else if ( /\b(?:iphone|ipad);.*(?:iphone)? os \d+_/i.test( userAgent ) ) {
 		expected = expectedMap.ios;
+	} else if ( /\bversion\/(?:15|16\.[0123])(?:\.\d+)* safari/i.test( userAgent ) ) {
+		expected = expectedMap.safari_16_3;
+	} else if ( /\bversion\/\d+(?:\.\d+)+ safari/i.test( userAgent ) ) {
+		expected = expectedMap.safari;
 	}
 
 	QUnit.test( "Verify that support tests resolve as expected per browser", function( assert ) {
@@ -116,7 +174,8 @@ testIframe(
 		for ( i in expected ) {
 			assert.equal( computedSupport[ i ], expected[ i ],
 				"jQuery.support['" + i + "']: " + computedSupport[ i ] +
-					", expected['" + i + "']: " + expected[ i ] );
+					", expected['" + i + "']: " + expected[ i ] +
+					";\nUser Agent: " + navigator.userAgent );
 		}
 	} );
 
